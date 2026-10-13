@@ -1,11 +1,11 @@
 {
-  "name": "vite-boilerplate",
+  "name": "kaluzny-blog-front",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "license": "proprietary",
   "main": "index.js",
-  "author": "generacja-innowacja",
+  "author": "Łukasz Kałużny",
   "scripts": {
     "dev": "vite",
     "build": "npx react-router build",
