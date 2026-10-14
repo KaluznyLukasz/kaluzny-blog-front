@@ -1,16 +1,25 @@
 import type { ReactNode } from "react";
-import { Outlet, Scripts } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import type { Route } from "./+types/root";
+import PageLayout from "./components/shared/PageLayout/PageLayout";
+import { SITE_NAME } from "./constants/common";
 
 import "./index.css";
+
+export const meta: Route.MetaFunction = () => [{ title: SITE_NAME }];
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <title>Łukasz Kałużny</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
       </head>
       <body>
         {children}
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -18,5 +27,9 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <PageLayout>
+      <Outlet />
+    </PageLayout>
+  );
 }

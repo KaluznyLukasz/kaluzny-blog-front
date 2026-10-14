@@ -90,7 +90,7 @@ yarn storybook        # Start Storybook (http://localhost:6006)
 yarn storybook:build  # Build Storybook as a static site
 ```
 
-Before the first `yarn e2e` run, install the Playwright browsers with `npx playwright install`.
+Before the first `yarn e2e` run, install the browser with `yarn playwright install chromium`. `yarn e2e` builds the app and serves the build at http://localhost:4173 before running the tests (in CI it serves the build from the build job). The HTML report is written to `playwright-report/`.
 
 ## Project structure
 

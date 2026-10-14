@@ -43,7 +43,6 @@ jobs:
           path: build
 
   e2e:
-    if: false # always skip until any E2E test is created
     name: Test E2E
     needs: build
     runs-on: ubuntu-latest
@@ -58,6 +57,10 @@ jobs:
         with:
           node-version: 24.x
           cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --network-concurrency 1
 
       - name: Download built app
         uses: actions/download-artifact@v4
@@ -65,26 +68,19 @@ jobs:
           name: frontend-build
           path: build
 
-      - name: Start app
-        run: |
-          set -e
-          yarn preview &
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --network-concurrency 1
-
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps --only-shell
+        run: yarn playwright install --with-deps --only-shell chromium
 
+      # Playwright starts `yarn preview` itself (see webServer in playwright.config.ts)
       - name: Run Playwright tests (against built app)
-        run: npx playwright test
+        run: yarn e2e
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: /playwright-report/
+          path: playwright-report/
           retention-days: 1
 
   unit:
