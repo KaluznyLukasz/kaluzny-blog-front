@@ -6,6 +6,21 @@ import type { Contact } from "./ContactList.types";
 const CONTACTS: Contact[] = [
   { kind: "email", label: "Email", href: "mailto:hello@example.com" },
   { kind: "github", label: "GitHub", href: "https://github.com/example" },
+  {
+    kind: "linkedin",
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/example",
+  },
+  {
+    kind: "facebook",
+    label: "Facebook",
+    href: "https://www.facebook.com/example",
+  },
+  {
+    kind: "instagram",
+    label: "Instagram",
+    href: "https://www.instagram.com/example",
+  },
   { kind: "website", label: "Website", href: "https://example.com" },
 ];
 
