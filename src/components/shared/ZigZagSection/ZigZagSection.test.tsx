@@ -132,4 +132,26 @@ describe("<ZigZagSection />", () => {
       );
     });
   });
+
+  describe("when rendered with its own content next to the section", () => {
+    it("shows that content instead of an image, on wide screens only", () => {
+      render(
+        <ZigZagSection
+          title="About me"
+          side="left"
+          aside={<div data-testid="aside">Custom tile</div>}
+        >
+          <p>Hello</p>
+        </ZigZagSection>,
+      );
+      const aside = screen.getByTestId("aside");
+
+      expect(getRow()).toContainElement(aside);
+      expect(
+        screen.getByRole("region", { name: "About me" }),
+      ).not.toContainElement(aside);
+      expect(aside.parentElement).toHaveClass("hidden", "lg:block");
+      expect(getRow()?.querySelector(".border-dashed")).not.toBeInTheDocument();
+    });
+  });
 });
