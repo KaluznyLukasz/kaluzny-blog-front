@@ -18,13 +18,21 @@ interface Props {
   side: ZigZagSide;
   image?: SectionImageSource;
   Icon?: ReactNode;
+  aside?: ReactNode;
   children: ReactNode;
 }
 
 const TILT_CLASSES =
   "transition-[rotate] duration-300 hover:rotate-0 motion-reduce:transition-none";
 
-const ZigZagSection = ({ title, side, image, Icon, children }: Props) => {
+const ZigZagSection = ({
+  title,
+  side,
+  image,
+  Icon,
+  aside,
+  children,
+}: Props) => {
   return (
     <div
       className={twMerge(
@@ -52,7 +60,7 @@ const ZigZagSection = ({ title, side, image, Icon, children }: Props) => {
           !image && "hidden lg:block",
         )}
       >
-        <SectionImage image={image} Icon={Icon} />
+        {aside ?? <SectionImage image={image} Icon={Icon} />}
       </Reveal>
     </div>
   );

@@ -55,3 +55,13 @@ export const WithIcon: Story = {
     Icon: <CodeXml />,
   },
 };
+
+export const WithCustomAside: Story = {
+  args: {
+    aside: (
+      <div className="flex aspect-4/3 w-full items-center justify-center rounded-4xl border-2 border-gi-orange bg-gi-orange/10 font-bold text-gi-primary">
+        Any content can go here
+      </div>
+    ),
+  },
+};

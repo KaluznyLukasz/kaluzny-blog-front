@@ -72,7 +72,29 @@ The back end lives in a separate repository: [KaluznyLukasz/kaluzny-blog-back](h
 - the API is available at [http://localhost](http://localhost)
 - the Swagger documentation is at [http://localhost/api](http://localhost/api)
 
-API code goes in `src/services/api/` (`client/`, `schemas/`, `utils/`).
+API code lives in `src/services/api/`: `client/` holds the Axios client and one function per endpoint (for example `getArticles`), `schemas/` the Zod schemas (TypeScript types come from them with `z.infer`) and `utils/` helpers. Components never import Axios.
+
+Every answer from the API is checked with a Zod schema (`parseResponse`). A response interceptor on the client turns every failed request into an `ApiError` with a `reason` (`network`, `timeout`, `http`, `cancelled`, ...), and an answer that does not match its schema becomes an `ApiError` with the reason `invalid-response`. Code that calls the API only ever has to handle one kind of error.
+
+### Changing the API address
+
+The app reads the API address from the `VITE_API_URL` environment variable. Its default, `http://localhost`, is set in `.env`, so `yarn dev` talks to the local back end with no setup.
+
+To use another API, create a `.env.local` file next to `.env` (Git ignores it):
+
+```shell
+VITE_API_URL=https://api.example.com
+```
+
+or set the variable for a single command:
+
+```shell
+VITE_API_URL=https://api.example.com yarn build
+```
+
+Vite reads the variable when the dev server starts and when the app is built, so restart `yarn dev` or build again after changing it.
+
+In development the back end only accepts requests from `http://localhost:5173`, so use `yarn dev` to see the real articles locally (`yarn preview` runs on another port and is blocked by CORS).
 
 ## Available scripts
 
@@ -90,7 +112,7 @@ yarn storybook        # Start Storybook (http://localhost:6006)
 yarn storybook:build  # Build Storybook as a static site
 ```
 
-Before the first `yarn e2e` run, install the browser with `yarn playwright install chromium`. `yarn e2e` builds the app and serves the build at http://localhost:4173 before running the tests (in CI it serves the build from the build job). The HTML report is written to `playwright-report/`.
+Before the first `yarn e2e` run, install the browser with `yarn playwright install chromium`. `yarn e2e` builds the app and serves the build at http://localhost:4173 before running the tests (in CI it serves the build from the build job). The HTML report is written to `playwright-report/`. The end-to-end tests do not need the API: they answer its requests with Playwright mocks (`e2e/blog/articlesApi.ts`).
 
 ## Project structure
 
@@ -129,4 +151,4 @@ yarn upgrade @gi-org-pl/athena --latest
 
 - `main` is protected: changes go through reviewed pull requests, and every commit must be signed.
 - Name branches following [Conventional Branch](https://conventional-branch.github.io/), for example `feat/about-me-page`.
-- Fill in the pull request template. CI (`.github/workflows/build-frontend.yml`) runs the build, unit tests and lint on every pull request to `main`.
+- Fill in the pull request template. CI (`.github/workflows/build-frontend.yml`) runs the build, unit tests, lint and end-to-end tests on every pull request to `main`.
