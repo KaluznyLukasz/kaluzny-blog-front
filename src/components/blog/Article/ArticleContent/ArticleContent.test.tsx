@@ -55,6 +55,44 @@ describe("<ArticleContent />", () => {
     });
   });
 
+  describe("when the article is short", () => {
+    it("shows how long it takes to read, at least one minute", () => {
+      render(<ArticleContent {...ARTICLE} />);
+
+      expect(screen.getByText("1 min read")).toBeInTheDocument();
+    });
+  });
+
+  describe("when the article is long", () => {
+    it("shows how many minutes it takes to read", () => {
+      const content = Array.from({ length: 450 }, () => "word").join(" ");
+
+      render(<ArticleContent {...ARTICLE} content={content} />);
+
+      expect(screen.getByText("3 min read")).toBeInTheDocument();
+    });
+  });
+
+  describe("when the article has several paragraphs", () => {
+    it("shows the first one larger, as an introduction", () => {
+      const { container } = render(<ArticleContent {...ARTICLE} />);
+      const [first, second] = Array.from(container.querySelectorAll("p"));
+
+      expect(first).toHaveClass("text-xl");
+      expect(second).not.toHaveClass("text-xl");
+    });
+  });
+
+  describe("when the article has one paragraph", () => {
+    it("shows it like any other paragraph", () => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} content="Only one paragraph." />,
+      );
+
+      expect(container.querySelector("p")).not.toHaveClass("text-xl");
+    });
+  });
+
   describe("when it appears", () => {
     it("fades and slides in, so the page does not jump in", () => {
       render(<ArticleContent {...ARTICLE} />);
@@ -82,9 +120,10 @@ describe("<ArticleContent />", () => {
   });
 
   describe("when the content is empty", () => {
-    it("still shows the title and the date, without paragraphs", () => {
+    it("still shows the title and the date, without paragraphs or reading time", () => {
       const { container } = render(<ArticleContent {...ARTICLE} content="" />);
 
+      expect(screen.queryByText(/min read/)).not.toBeInTheDocument();
       expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
       expect(screen.getByText("14 February 2025")).toBeInTheDocument();
       expect(container.querySelectorAll("p")).toHaveLength(0);

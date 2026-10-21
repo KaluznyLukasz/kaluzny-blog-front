@@ -1,20 +1,11 @@
 import {
-  act,
   fireEvent,
   render as renderInDom,
   screen,
-  waitFor,
 } from "@testing-library/react";
 import type { ReactElement } from "react";
-import {
-  createMemoryRouter,
-  MemoryRouter,
-  Outlet,
-  RouterProvider,
-} from "react-router";
+import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import ArticlePage from "../../../pages/articles.$id";
-import BlogPage from "../../../pages/blog";
 import { getArticle } from "../../../services/api/client/getArticle";
 import { getArticles } from "../../../services/api/client/getArticles";
 import type { Article as ArticleData } from "../../../services/api/schemas/article";
@@ -41,25 +32,6 @@ const SECOND: ArticleData = {
 };
 
 const render = (ui: ReactElement) => renderInDom(ui, { wrapper: MemoryRouter });
-
-const renderApp = (initialEntries: string[], initialIndex?: number) => {
-  const router = createMemoryRouter(
-    [
-      {
-        Component: Outlet,
-        children: [
-          { path: "/", Component: () => <h1>About me</h1> },
-          { path: "/blog", Component: BlogPage },
-          { path: "/articles/:id", Component: ArticlePage },
-        ],
-      },
-    ],
-    { initialEntries, initialIndex },
-  );
-  renderInDom(<RouterProvider router={router} />);
-
-  return router;
-};
 
 describe("<Article />", () => {
   beforeEach(() => {
@@ -121,6 +93,20 @@ describe("<Article />", () => {
       expect(screen.queryByRole("status")).not.toBeInTheDocument();
     });
 
+    it("offers more articles after the last paragraph", async () => {
+      vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
+
+      render(<Article id={FIRST.id} />);
+      await screen.findByRole("article");
+
+      expect(
+        screen.getByRole("link", { name: ARTICLE_MESSAGES.more }),
+      ).toHaveAttribute("href", "/blog");
+      expect(screen.getByRole("article")).not.toContainElement(
+        screen.getByRole("link", { name: ARTICLE_MESSAGES.more }),
+      );
+    });
+
     it("keeps the way back", async () => {
       vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
 
@@ -173,6 +159,9 @@ describe("<Article />", () => {
       ).toHaveAttribute("href", "/blog");
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
       expect(screen.queryByRole("button")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: ARTICLE_MESSAGES.more }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -245,123 +234,6 @@ describe("<Article />", () => {
         await screen.findByRole("heading", { level: 1, name: FIRST.title }),
       ).toBeInTheDocument();
       expect(getArticle).toHaveBeenCalledTimes(2);
-    });
-  });
-});
-
-describe("the article page, as the visitor moves around the site", () => {
-  beforeEach(() => {
-    vi.mocked(getArticle).mockReset();
-    vi.mocked(getArticles).mockReset();
-    vi.mocked(getArticles).mockResolvedValue([SECOND, FIRST]);
-  });
-
-  describe("when the visitor picks an article in the blog", () => {
-    it("opens the page of that article without asking for the list again", async () => {
-      vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
-      const router = renderApp(["/blog"]);
-
-      fireEvent.click(
-        await screen.findByRole("link", {
-          name: `Read more about ${FIRST.title}`,
-        }),
-      );
-
-      expect(
-        await screen.findByRole("heading", { level: 1, name: FIRST.title }),
-      ).toBeInTheDocument();
-      expect(router.state.location.pathname).toBe(`/articles/${FIRST.id}`);
-      expect(getArticle).toHaveBeenCalledWith(
-        FIRST.id,
-        expect.any(AbortSignal),
-      );
-      expect(getArticles).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe("when the visitor uses the way back", () => {
-    it("is back on the blog", async () => {
-      vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
-      renderApp(["/blog", `/articles/${FIRST.id}`], 1);
-      await screen.findByRole("article");
-
-      fireEvent.click(
-        screen.getByRole("link", { name: ARTICLE_MESSAGES.back }),
-      );
-
-      expect(
-        await screen.findByRole("heading", { level: 1, name: "Blog" }),
-      ).toBeInTheDocument();
-    });
-  });
-
-  describe("when the visitor uses the browser's Back button", () => {
-    it("is back on the page they came from", async () => {
-      vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
-      const router = renderApp(["/", `/articles/${FIRST.id}`], 1);
-      await screen.findByRole("article");
-
-      await act(() => router.navigate(-1));
-
-      expect(
-        await screen.findByRole("heading", { level: 1, name: "About me" }),
-      ).toBeInTheDocument();
-      expect(screen.queryByRole("article")).not.toBeInTheDocument();
-    });
-  });
-
-  describe("when the visitor opens an article address directly", () => {
-    it("loads the article without the visitor having been on any other page", async () => {
-      vi.mocked(getArticle).mockResolvedValueOnce(SECOND);
-
-      renderApp([`/articles/${SECOND.id}`]);
-
-      expect(
-        await screen.findByRole("heading", { level: 1, name: SECOND.title }),
-      ).toBeInTheDocument();
-      expect(getArticles).not.toHaveBeenCalled();
-    });
-
-    it("says the article does not exist when the address has an invalid ID", async () => {
-      renderApp(["/articles/123"]);
-
-      expect(
-        await screen.findByRole("heading", {
-          level: 1,
-          name: ARTICLE_MESSAGES.notFound,
-        }),
-      ).toBeInTheDocument();
-      expect(getArticle).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("when the visitor goes from one article to another", () => {
-    it("loads the new article and never shows the old one under the new address", async () => {
-      vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
-      const router = renderApp([`/articles/${FIRST.id}`]);
-      await screen.findByRole("heading", { level: 1, name: FIRST.title });
-      let answer: (article: ArticleData) => void = () => {};
-      vi.mocked(getArticle).mockReturnValueOnce(
-        new Promise((resolve) => {
-          answer = resolve;
-        }),
-      );
-
-      await act(() => router.navigate(`/articles/${SECOND.id}`));
-
-      expect(screen.queryByText(FIRST.title)).not.toBeInTheDocument();
-      expect(screen.getByRole("status")).toHaveTextContent(
-        ARTICLE_MESSAGES.loading,
-      );
-
-      await act(async () => answer(SECOND));
-
-      await waitFor(() =>
-        expect(
-          screen.getByRole("heading", { level: 1, name: SECOND.title }),
-        ).toBeInTheDocument(),
-      );
-      expect(screen.queryByText(FIRST.title)).not.toBeInTheDocument();
     });
   });
 });

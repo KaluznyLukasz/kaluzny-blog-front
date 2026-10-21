@@ -17,7 +17,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto flex max-w-5xl flex-col wrap-anywhere">
+      <div className="mx-auto flex max-w-3xl flex-col wrap-anywhere">
         <Story />
       </div>
     ),
@@ -33,6 +33,18 @@ export const WithHtmlInContent: Story = {
   args: {
     content:
       '<script>alert("This never runs")</script>\n<b>Not bold</b> and <img src="x" onerror="alert(1)">\n\nThe visitor reads the text exactly as it was written.',
+  },
+};
+
+export const ShortArticle: Story = {
+  args: {
+    content: "A single short paragraph is shown like any other paragraph.",
+  },
+};
+
+export const WithoutContent: Story = {
+  args: {
+    content: "",
   },
 };
 

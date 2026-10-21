@@ -5,6 +5,5 @@ export const ARTICLE_MESSAGES = {
   error: "Sorry, the article could not be loaded. Please try again.",
   retry: "Try again",
   back: "Back to blog",
+  more: "More articles",
 };
-
-export const PLACEHOLDER_LINE_WIDTHS = ["w-full", "w-11/12", "w-full", "w-2/3"];

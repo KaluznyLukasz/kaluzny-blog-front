@@ -64,6 +64,7 @@ test.describe("Given a visitor on the about me page", () => {
       await expect(page.getByRole("main").locator("time")).toHaveText(
         "14 February 2025",
       );
+      await expect(page.getByText("1 min read")).toBeVisible();
       await expect(page.getByRole("article").locator("p")).toHaveText([
         "Everything in this project runs in containers, including npm.",
         "It felt strange for a week and then I stopped caring.",
@@ -85,6 +86,21 @@ test.describe("Given a visitor on the about me page", () => {
 
       await expect(page).toHaveURL("/blog");
       await expect(articleHeading(page)).toHaveText("Blog");
+      await expect(page.getByRole("region")).toHaveCount(LIST.length);
+    });
+  });
+
+  test.describe("when they read the article and want more", () => {
+    test("then the link after the article leads to the blog", async ({
+      page,
+    }) => {
+      await serveSite(page);
+      await page.goto(ARTICLE_PATH);
+      await expect(articleHeading(page)).toHaveText(ARTICLE.title);
+
+      await page.getByRole("link", { name: "More articles" }).click();
+
+      await expect(page).toHaveURL("/blog");
       await expect(page.getByRole("region")).toHaveCount(LIST.length);
     });
   });
