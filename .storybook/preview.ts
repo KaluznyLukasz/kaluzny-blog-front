@@ -4,6 +4,7 @@ import { sb } from "storybook/test";
 import "../src/index.css";
 
 sb.mock(import("../src/services/api/client/getArticles.ts"), { spy: true });
+sb.mock(import("../src/services/api/client/getArticle.ts"), { spy: true });
 
 const preview: Preview = {
   parameters: {

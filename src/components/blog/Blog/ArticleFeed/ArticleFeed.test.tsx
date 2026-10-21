@@ -1,4 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  fireEvent,
+  render as renderInDom,
+  screen,
+} from "@testing-library/react";
+import type { ReactElement } from "react";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import type { Article } from "../../../../services/api/schemas/article";
 import ArticleFeed from "./ArticleFeed";
@@ -10,6 +16,8 @@ const article = (index: number): Article => ({
   content: "Some content.",
   publishedAt: `2025-0${index}-10T09:00:00.000Z`,
 });
+
+const render = (ui: ReactElement) => renderInDom(ui, { wrapper: MemoryRouter });
 
 const ARTICLES = [article(5), article(4), article(3), article(2), article(1)];
 
@@ -51,6 +59,19 @@ describe("<ArticleFeed />", () => {
           .map((heading) => heading.textContent),
       ).toEqual(ARTICLES.map(({ title }) => title));
       expect(screen.getAllByRole("region")).toHaveLength(ARTICLES.length);
+    });
+
+    it("links every section to the page of its own article", () => {
+      render(
+        <ArticleFeed
+          state={{ status: "success", articles: ARTICLES }}
+          onRetry={vi.fn()}
+        />,
+      );
+
+      expect(
+        screen.getAllByRole("link").map((link) => link.getAttribute("href")),
+      ).toEqual(ARTICLES.map(({ id }) => `/articles/${id}`));
     });
 
     it("zig-zags the sections from side to side", () => {

@@ -7,7 +7,7 @@ import { SITE_NAME } from "./constants/common";
 
 import "./index.css";
 
-export const meta: Route.MetaFunction = () => [{ title: SITE_NAME }];
+export const meta = (() => [{ title: SITE_NAME }]) satisfies Route.MetaFunction;
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/png", href: favicon },

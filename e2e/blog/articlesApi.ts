@@ -40,3 +40,17 @@ export const serveArticles = (page: Page, articles: unknown = ARTICLES) =>
   page.route(ARTICLES_URL, (route) => answerWith(route, articles));
 
 export const neverAnswer = (page: Page) => page.route(ARTICLES_URL, () => {});
+
+export const articleUrl = (id: string) => `**/api/v1/articles/${id}`;
+
+export const serveArticle = <Article extends { id: string }>(
+  page: Page,
+  article: Article,
+) => page.route(articleUrl(article.id), (route) => answerWith(route, article));
+
+export const answerWithStatus = (route: Route, status: number, body: unknown) =>
+  route.fulfill({
+    status,
+    json: body,
+    headers: { "Access-Control-Allow-Origin": "*" },
+  });

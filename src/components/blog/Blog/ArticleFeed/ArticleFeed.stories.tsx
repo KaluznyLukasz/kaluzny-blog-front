@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { MemoryRouter } from "react-router";
 import { fn } from "storybook/test";
 
 import ArticleFeed from "./ArticleFeed";
@@ -40,9 +41,11 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto flex max-w-5xl flex-col gap-10 wrap-anywhere lg:gap-14">
-        <Story />
-      </div>
+      <MemoryRouter>
+        <div className="mx-auto flex max-w-5xl flex-col gap-10 wrap-anywhere lg:gap-14">
+          <Story />
+        </div>
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof ArticleFeed>;

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { MemoryRouter } from "react-router";
 
 import ArticleSection from "./ArticleSection";
 
@@ -10,6 +11,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
+    id: "5e1f0a2b-0002-4000-8000-000000000002",
     title: "My first month with Docker",
     content:
       "Everything in this project runs in containers, including npm. It felt strange for a week and then I stopped caring about which Node.js version is on my laptop.",
@@ -19,9 +21,11 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto flex max-w-5xl flex-col wrap-anywhere">
-        <Story />
-      </div>
+      <MemoryRouter>
+        <div className="mx-auto flex max-w-5xl flex-col wrap-anywhere">
+          <Story />
+        </div>
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof ArticleSection>;

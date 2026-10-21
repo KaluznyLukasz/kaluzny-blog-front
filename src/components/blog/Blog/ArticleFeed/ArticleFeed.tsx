@@ -1,6 +1,6 @@
-import { Button, InfoMessage } from "@gi-org-pl/athena";
-import { RotateCw } from "lucide-react";
+import { InfoMessage } from "@gi-org-pl/athena";
 import { twMerge } from "tailwind-merge";
+import RetryMessage from "../../../shared/RetryMessage/RetryMessage";
 import { ZIG_ZAG_ROW_CLASSES } from "../../../shared/ZigZagSection/ZigZagSection.constants";
 import type { ArticlesState } from "../Blog.types";
 import {
@@ -46,19 +46,11 @@ const ArticleFeed = ({ state, onRetry }: Props) => {
 
   if (state.status === "error") {
     return (
-      <div className="flex flex-col items-center gap-4 sm:items-start">
-        <InfoMessage role="alert" variant="error">
-          {FEED_MESSAGES.error}
-        </InfoMessage>
-        <Button
-          type="outlined"
-          LeftIcon={<RotateCw />}
-          onClick={onRetry}
-          className="focus-visible:outline-2 focus-visible:outline-gi-secondary focus-visible:outline-offset-2 [&_svg_*]:fill-none [&_svg_*]:stroke-current"
-        >
-          {FEED_MESSAGES.retry}
-        </Button>
-      </div>
+      <RetryMessage
+        message={FEED_MESSAGES.error}
+        retryLabel={FEED_MESSAGES.retry}
+        onRetry={onRetry}
+      />
     );
   }
 
@@ -73,6 +65,7 @@ const ArticleFeed = ({ state, onRetry }: Props) => {
   return state.articles.map(({ id, title, content, publishedAt }, index) => (
     <ArticleSection
       key={id}
+      id={id}
       title={title}
       content={content}
       publishedAt={publishedAt}
