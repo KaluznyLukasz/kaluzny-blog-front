@@ -1,12 +1,18 @@
-import { render, screen } from "@testing-library/react";
+import { render as renderInDom, screen } from "@testing-library/react";
+import type { ReactElement } from "react";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 import ArticleSection from "./ArticleSection";
+import { READ_MORE_LABEL } from "./ArticleSection.constants";
 
 const ARTICLE = {
+  id: "5e1f0a2b-0002-4000-8000-000000000002",
   title: "My first month with Docker",
   content: "Everything in this project runs in containers.",
   publishedAt: "2025-02-14T12:30:00.000Z",
 };
+
+const render = (ui: ReactElement) => renderInDom(ui, { wrapper: MemoryRouter });
 
 const getRow = () =>
   screen.getByRole("region", { name: ARTICLE.title }).parentElement
@@ -48,6 +54,44 @@ describe("<ArticleSection />", () => {
       expect(
         screen.getByRole("region", { name: ARTICLE.title }),
       ).not.toContainElement(day);
+    });
+  });
+
+  describe("when the visitor wants to read the whole article", () => {
+    it("offers a link to the page of this article, named after it", () => {
+      render(<ArticleSection {...ARTICLE} side="right" accent="primary" />);
+
+      expect(
+        screen.getByRole("link", {
+          name: `${READ_MORE_LABEL} about ${ARTICLE.title}`,
+        }),
+      ).toHaveAttribute("href", `/articles/${ARTICLE.id}`);
+    });
+
+    it("keeps the link inside the section", () => {
+      render(<ArticleSection {...ARTICLE} side="right" accent="primary" />);
+
+      expect(
+        screen.getByRole("region", { name: ARTICLE.title }),
+      ).toContainElement(screen.getByRole("link"));
+    });
+  });
+
+  describe("when the content has HTML", () => {
+    it("shows it as text and never as elements", () => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          content="<script>alert(1)</script><b>bold</b>"
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(
+        screen.getByText("<script>alert(1)</script><b>bold</b>"),
+      ).toBeInTheDocument();
+      expect(container.querySelector("script, b")).toBeNull();
     });
   });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { articleListSchema } from "./article";
+import { articleIdSchema, articleListSchema, articleSchema } from "./article";
 
 const ARTICLE = {
   id: "5e1f0a2b-0001-4000-8000-000000000001",
@@ -57,5 +57,50 @@ describe("articleListSchema", () => {
     ])("rejects %s", (_, answer) => {
       expect(articleListSchema.safeParse(answer).success).toBe(false);
     });
+  });
+});
+
+describe("articleSchema", () => {
+  describe("when the answer is an article", () => {
+    it("accepts it and leaves out fields it does not know", () => {
+      expect(articleSchema.parse({ ...ARTICLE, author: "Me" })).toEqual(
+        ARTICLE,
+      );
+    });
+
+    it("keeps content with HTML as plain text", () => {
+      const content = "<script>alert(1)</script> and <b>bold</b>";
+
+      expect(articleSchema.parse({ ...ARTICLE, content }).content).toBe(
+        content,
+      );
+    });
+  });
+
+  describe("when the answer is not an article", () => {
+    it.each([
+      ["a list of articles", [ARTICLE]],
+      ["null", null],
+      ["an article without a title", { ...ARTICLE, title: undefined }],
+      ["an article with an ID that is not a UUID", { ...ARTICLE, id: "1" }],
+      ["an error", { statusCode: 404, message: "Not found" }],
+    ])("rejects %s", (_, answer) => {
+      expect(articleSchema.safeParse(answer).success).toBe(false);
+    });
+  });
+});
+
+describe("articleIdSchema", () => {
+  it("accepts a UUID", () => {
+    expect(articleIdSchema.safeParse(ARTICLE.id).success).toBe(true);
+  });
+
+  it.each([
+    ["a number", "123"],
+    ["a word", "not-an-id"],
+    ["an empty string", ""],
+    ["a path", "../../etc/passwd"],
+  ])("rejects %s", (_, id) => {
+    expect(articleIdSchema.safeParse(id).success).toBe(false);
   });
 });

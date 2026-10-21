@@ -1,4 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  fireEvent,
+  render as renderInDom,
+  screen,
+} from "@testing-library/react";
+import type { ReactElement } from "react";
+import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getArticles } from "../../../services/api/client/getArticles";
 import type { Article } from "../../../services/api/schemas/article";
@@ -23,6 +29,8 @@ const ARTICLES: Article[] = [
     publishedAt: "2025-01-10T09:00:00.000Z",
   },
 ];
+
+const render = (ui: ReactElement) => renderInDom(ui, { wrapper: MemoryRouter });
 
 const articleTitles = () =>
   screen

@@ -1,4 +1,1 @@
-export const PUBLISHED_DATE_FORMAT = new Intl.DateTimeFormat("en-GB", {
-  dateStyle: "long",
-  timeZone: "Europe/Warsaw",
-});
+export const READ_MORE_LABEL = "Read more";
