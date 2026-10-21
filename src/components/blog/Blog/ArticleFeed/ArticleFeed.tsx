@@ -1,6 +1,7 @@
 import { Button, InfoMessage } from "@gi-org-pl/athena";
 import { RotateCw } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import { ZIG_ZAG_ROW_CLASSES } from "../../../shared/ZigZagSection/ZigZagSection.constants";
 import type { ArticlesState } from "../Blog.types";
 import {
   ACCENT_ORDER,
@@ -27,7 +28,7 @@ const ArticleFeed = ({ state, onRetry }: Props) => {
             aria-hidden="true"
             className={twMerge(
               "flex flex-col gap-6 motion-safe:animate-pulse lg:flex-row lg:items-center lg:gap-10",
-              side === "right" && "lg:flex-row-reverse",
+              ZIG_ZAG_ROW_CLASSES[side],
             )}
           >
             <div className="flex w-full flex-col gap-4 rounded-4xl bg-gi-ash/70 p-6 lg:w-3/5">
