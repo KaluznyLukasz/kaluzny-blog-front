@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { SITE_NAME } from "../../../../constants/common";
 import ArticleContent from "./ArticleContent";
 
 const ARTICLE = {
@@ -52,6 +53,24 @@ describe("<ArticleContent />", () => {
         "It felt strange for a week.",
         "Then I stopped caring.",
       ]);
+    });
+  });
+
+  describe("when rendered, for the tab of the browser", () => {
+    it("names the tab after the article and the site", () => {
+      render(<ArticleContent {...ARTICLE} />);
+
+      expect(document.title).toBe(`${ARTICLE.title} · ${SITE_NAME}`);
+    });
+  });
+
+  describe("when rendered, for sharing", () => {
+    it("offers a button to copy the link to the article", () => {
+      render(<ArticleContent {...ARTICLE} />);
+
+      expect(
+        screen.getByRole("button", { name: "Copy link" }),
+      ).toBeInTheDocument();
     });
   });
 

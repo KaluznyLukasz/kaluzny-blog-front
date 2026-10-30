@@ -31,10 +31,14 @@ describe("<PageLayout />", () => {
         screen.getByRole("navigation", { name: "Main" }),
       ).toBeInTheDocument();
     });
-    it("shows the site name", () => {
+
+    it("shows the site name as a link to the home page", () => {
       renderLayout();
 
-      expect(screen.getByText(SITE_NAME)).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: SITE_NAME })).toHaveAttribute(
+        "href",
+        "/",
+      );
     });
 
     it("shows the footer after the content", () => {

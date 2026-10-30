@@ -1,6 +1,6 @@
 import { SITE_NAME } from "../../../constants/common";
+import { CONTACTS } from "../../../constants/contacts";
 import ContactList from "./ContactList/ContactList";
-import { CONTACTS } from "./SiteFooter.constants";
 
 const SiteFooter = () => {
   const year = new Date().getFullYear();

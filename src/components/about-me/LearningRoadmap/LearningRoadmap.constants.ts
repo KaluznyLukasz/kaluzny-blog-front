@@ -1,10 +1,9 @@
-import type { Badge } from "@gi-org-pl/athena";
-import type { ComponentProps } from "react";
+import type { StatusBadgeType } from "../../shared/StatusBadge/StatusBadge.types";
 import type { RoadmapStatus } from "./LearningRoadmap.types";
 
 interface RoadmapStatusStyle {
   label: string;
-  badgeType: ComponentProps<typeof Badge>["type"];
+  badgeType: StatusBadgeType;
   dotClassName: string;
 }
 

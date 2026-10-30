@@ -114,13 +114,26 @@ yarn storybook:build  # Build Storybook as a static site
 
 Before the first `yarn e2e` run, install the browser with `yarn playwright install chromium`. `yarn e2e` builds the app and serves the build at http://localhost:4173 before running the tests (in CI it serves the build from the build job). The HTML report is written to `playwright-report/`. The end-to-end tests do not need the API: they answer its requests with Playwright mocks (`e2e/blog/articlesApi.ts`).
 
+## Pages
+
+| Address          | Page                                                                                          |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| `/`              | About me: introduction, tech stack, journey                                                   |
+| `/portfolio`     | Projects with status, platforms and store links                                               |
+| `/blog`          | Articles from the API                                                                         |
+| `/articles/:id`  | One article, with reading progress and a button that copies its link                          |
+| `/contact`       | Ways to reach me (add `{ kind: "email", ... }` to `src/constants/contacts.ts` to show email)  |
+| anything else    | "Page not found" (`src/pages/$.tsx`); unexpected errors show the error page from `root.tsx` |
+
+Every page sets its title and description for search engines and link previews with `createMeta` (`src/utils/createMeta.ts`). Crawler rules are in `public/robots.txt`. Because the app is a single-page app (`ssr: false`), the host must answer unknown addresses with `index.html`.
+
 ## Project structure
 
 ```text
 src/
 ├── assets/        # Images and vectors
 ├── components/    # Components grouped by domain; shared/ for components used across the app
-├── constants/     # Constants
+├── constants/     # Constants (site name, paths, contact links)
 ├── pages/         # Pages; every file is a route (flat routes)
 ├── services/api/  # API client, Zod schemas and helpers
 ├── types/         # Shared TypeScript types

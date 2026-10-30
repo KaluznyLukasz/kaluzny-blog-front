@@ -1,4 +1,4 @@
-import type { Contact } from "./ContactList/ContactList.types";
+import type { Contact } from "../components/shared/SiteFooter/ContactList/ContactList.types";
 
 export const CONTACTS: Contact[] = [
   {

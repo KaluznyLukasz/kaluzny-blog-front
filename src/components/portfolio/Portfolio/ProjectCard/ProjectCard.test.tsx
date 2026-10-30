@@ -57,6 +57,61 @@ describe("<ProjectCard />", () => {
     });
   });
 
+  describe("when rendered with a status", () => {
+    it("shows the status before the description", () => {
+      render(
+        <ProjectCard
+          name="School app"
+          description="Our school's app."
+          status="live"
+        />,
+      );
+
+      expect(
+        screen
+          .getByText("Live")
+          .compareDocumentPosition(screen.getByText("Our school's app.")),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+  });
+
+  describe("when rendered without a status", () => {
+    it("shows only the description", () => {
+      const { container } = render(
+        <ProjectCard name="School app" description="Our school's app." />,
+      );
+
+      expect(container.firstElementChild?.children).toHaveLength(1);
+    });
+  });
+
+  describe("when rendered with tags", () => {
+    it("shows them after the description and before the links", () => {
+      render(
+        <ProjectCard
+          name="School app"
+          description="Our school's app."
+          tags={["iOS", "Android"]}
+          links={[
+            { kind: "app-store", href: "https://apps.apple.com/app/id1" },
+          ]}
+        />,
+      );
+      const tags = screen.getByRole("list", {
+        name: "Platforms and technologies",
+      });
+
+      expect(
+        screen.getByText("Our school's app.").compareDocumentPosition(tags),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(
+        tags.compareDocumentPosition(
+          screen.getByRole("link", { name: "App Store for School app" }),
+        ),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+  });
+
   describe("when rendered without links", () => {
     it("shows no links and no empty list", () => {
       render(<ProjectCard name="School app" description="Our school's app." />);

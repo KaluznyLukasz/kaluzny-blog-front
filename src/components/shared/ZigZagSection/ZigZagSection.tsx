@@ -54,7 +54,7 @@ const ZigZagSection = ({
         from={OPPOSITE_SIDE[side]}
         delay={IMAGE_REVEAL_DELAY}
         className={twMerge(
-          "w-full lg:w-2/5",
+          "w-full max-w-lg self-center lg:w-2/5 lg:max-w-none lg:self-auto",
           TILT_CLASSES,
           ZIG_ZAG_IMAGE_CLASSES[side],
           !image && "hidden lg:block",

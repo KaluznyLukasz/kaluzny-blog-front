@@ -11,6 +11,11 @@ const openHomePage = async (page: Page) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 };
 
+const ZIG_ZAG_SECTIONS = /^(About me|Tech stack|My journey)$/;
+
+const zigZagSections = (page: Page) =>
+  page.getByRole("region", { name: ZIG_ZAG_SECTIONS });
+
 const imageSlotOf = (section: Locator) =>
   section.locator("xpath=../following-sibling::div[1]");
 
@@ -36,6 +41,55 @@ test.describe("Given a visitor", () => {
           .getByRole("navigation", { name: "Main" })
           .getByRole("link", { name: "About me" }),
       ).toHaveAttribute("aria-current", "page");
+    });
+  });
+
+  test.describe("when they look at the top of the home page", () => {
+    test("then it says what I do and offers two ways to go on", async ({
+      page,
+    }) => {
+      await openHomePage(page);
+
+      await expect(
+        page.getByText("Mobile developer · iOS & Android"),
+      ).toBeVisible();
+      await expect(page.getByText("Based in Poland")).toBeVisible();
+      await expect(
+        page.getByRole("link", { name: "View my work" }),
+      ).toBeInViewport();
+      await expect(
+        page.getByRole("link", { name: "Get in touch" }).first(),
+      ).toBeInViewport();
+    });
+
+    test("then View my work opens the portfolio", async ({ page }) => {
+      await openHomePage(page);
+
+      await page.getByRole("link", { name: "View my work" }).click();
+
+      await expect(page).toHaveURL("/portfolio");
+    });
+
+    test("then Get in touch opens the contact page", async ({ page }) => {
+      await openHomePage(page);
+
+      await page.getByRole("link", { name: "Get in touch" }).first().click();
+
+      await expect(page).toHaveURL("/contact");
+    });
+  });
+
+  test.describe("when they reach the end of the home page", () => {
+    test("then they are invited to get in touch", async ({ page }) => {
+      await openHomePage(page);
+      const invitation = page.getByRole("region", {
+        name: "Let's build something together",
+      });
+
+      await invitation.scrollIntoViewIfNeeded();
+      await invitation.getByRole("link", { name: "Get in touch" }).click();
+
+      await expect(page).toHaveURL("/contact");
     });
   });
 
@@ -105,7 +159,7 @@ test.describe("Given a visitor", () => {
       const leftGap = box?.x ?? 0;
       const rightGap = WIDE_SCREEN.width - leftGap - (box?.width ?? 0);
       expect(Math.abs(leftGap - rightGap)).toBeLessThanOrEqual(1);
-      for (const section of await page.getByRole("region").all()) {
+      for (const section of await zigZagSections(page).all()) {
         expect(
           await section.evaluate((element) => element.clientWidth),
         ).toBeLessThanOrEqual(READING_WIDTH);
@@ -115,7 +169,7 @@ test.describe("Given a visitor", () => {
     test("then the sections zig-zag from side to side", async ({ page }) => {
       await openHomePage(page);
       const lefts = await Promise.all(
-        (await page.getByRole("region").all()).map((section) =>
+        (await zigZagSections(page).all()).map((section) =>
           section.evaluate((element) => element.getBoundingClientRect().left),
         ),
       );
@@ -130,7 +184,7 @@ test.describe("Given a visitor", () => {
     }) => {
       await openHomePage(page);
 
-      for (const section of await page.getByRole("region").all()) {
+      for (const section of await zigZagSections(page).all()) {
         const imageSlot = imageSlotOf(section);
         await imageSlot.scrollIntoViewIfNeeded();
         await expect(imageSlot).toBeVisible();

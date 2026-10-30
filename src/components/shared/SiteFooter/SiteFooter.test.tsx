@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SITE_NAME } from "../../../constants/common";
+import { CONTACTS } from "../../../constants/contacts";
 import SiteFooter from "./SiteFooter";
-import { CONTACTS } from "./SiteFooter.constants";
 
 describe("<SiteFooter />", () => {
   describe("when rendered", () => {

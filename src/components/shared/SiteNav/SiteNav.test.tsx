@@ -12,7 +12,7 @@ const renderAt = (path: string) =>
 
 describe("<SiteNav />", () => {
   describe("when rendered", () => {
-    it("shows the main navigation with three pages, in order", () => {
+    it("shows the main navigation with four pages, in order", () => {
       renderAt("/");
       const nav = screen.getByRole("navigation", { name: "Main" });
 
@@ -24,6 +24,7 @@ describe("<SiteNav />", () => {
         ["About me", "/"],
         ["Portfolio", "/portfolio"],
         ["Blog", "/blog"],
+        ["Contact", "/contact"],
       ]);
     });
   });
@@ -40,6 +41,9 @@ describe("<SiteNav />", () => {
         screen.getByRole("link", { name: "About me" }),
       ).not.toHaveAttribute("aria-current");
       expect(screen.getByRole("link", { name: "Blog" })).not.toHaveAttribute(
+        "aria-current",
+      );
+      expect(screen.getByRole("link", { name: "Contact" })).not.toHaveAttribute(
         "aria-current",
       );
     });

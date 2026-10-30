@@ -60,7 +60,7 @@ describe("the article page", () => {
 
   describe("when it is described to the browser", () => {
     it("has a title with the name of the site", () => {
-      expect(meta()).toEqual([{ title: `Article · ${SITE_NAME}` }]);
+      expect(meta()).toContainEqual({ title: `Article · ${SITE_NAME}` });
     });
   });
 

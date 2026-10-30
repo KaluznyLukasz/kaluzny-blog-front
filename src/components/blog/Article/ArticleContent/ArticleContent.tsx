@@ -1,7 +1,9 @@
 import { CalendarDays, Clock } from "lucide-react";
 import { twMerge } from "tailwind-merge";
-import { PUBLISHED_DATE_FORMAT } from "../../../../constants/common";
+import { PUBLISHED_DATE_FORMAT, SITE_NAME } from "../../../../constants/common";
 import type { Article } from "../../../../services/api/schemas/article";
+import { useDocumentTitle } from "../../../../utils/useDocumentTitle";
+import CopyLinkButton from "../CopyLinkButton/CopyLinkButton";
 import {
   ENTER_ANIMATION_CLASSES,
   LEAD_PARAGRAPH_CLASSES,
@@ -17,6 +19,8 @@ const CHIP_CLASSES =
 const ArticleContent = ({ title, content, publishedAt }: Props) => {
   const paragraphs = splitParagraphs(content);
   const readingMinutes = getReadingMinutes(content);
+
+  useDocumentTitle(`${title} · ${SITE_NAME}`);
 
   return (
     <article
@@ -46,6 +50,9 @@ const ArticleContent = ({ title, content, publishedAt }: Props) => {
               </span>
             </li>
           )}
+          <li className="sm:ml-auto">
+            <CopyLinkButton />
+          </li>
         </ul>
         <h1 className="bg-linear-to-r from-gi-primary via-gi-secondary to-gi-blue bg-clip-text pb-1 font-extrabold text-3xl text-transparent leading-tight sm:text-5xl">
           {title}

@@ -1,12 +1,27 @@
+import { MapPin, Rocket } from "lucide-react";
 import meteoraPhoto from "../../../assets/images/meteora.jpg";
 import skiathosPhoto from "../../../assets/images/skiatos.jpeg";
 import type { SectionImageSource } from "../../shared/ZigZagSection/SectionImage/SectionImage.types";
 import type { RoadmapStep } from "../LearningRoadmap/LearningRoadmap.types";
+import type { ProfileFact } from "../ProfileHeader/ProfileHeader.types";
+import type { SkillGroup } from "../SkillList/SkillList.types";
 
 export const PROFILE = {
   name: "Łukasz Kałużny",
   role: "Mobile developer · iOS & Android",
+  tagline:
+    "I build mobile apps that turn everyday problems into something simple and enjoyable to use.",
   photo: skiathosPhoto,
+};
+
+export const PROFILE_FACTS: ProfileFact[] = [
+  { Icon: MapPin, label: "Based in Poland" },
+  { Icon: Rocket, label: "Learning Android with Kotlin" },
+];
+
+export const HERO_ACTIONS = {
+  work: "View my work",
+  contact: "Get in touch",
 };
 
 export const ABOUT_ME_IMAGE: SectionImageSource = {
@@ -15,28 +30,26 @@ export const ABOUT_ME_IMAGE: SectionImageSource = {
 };
 
 export const INTRODUCTION = [
-  "I build mobile apps that turn everyday problems into something simple and enjoyable to use.",
   "I'm studying programming at a technical school in Poland. Together with a friend, I designed, built and shipped ZSTiO, the official app of our school, made for students, parents and teachers and available on the App Store and Google Play.",
   "I've completed an internship at the Generacja Innowacja Foundation, where I learnt how a professional team plans, reviews and ships software. Right now I'm learning Android development and taking my iOS skills further.",
 ];
 
-export const SKILLS = [
-  "Swift",
-  "SwiftUI",
-  "Firebase",
-  "Kotlin",
-  "Java",
-  "TypeScript",
-  "React",
-  "Tailwind CSS",
-  "Vitest",
-  "JavaScript",
-  "HTML",
-  "CSS",
-  "PHP",
-  "SQL",
-  "Git",
+export const SKILL_GROUPS: SkillGroup[] = [
+  {
+    title: "Mobile",
+    skills: ["Swift", "SwiftUI", "Kotlin", "Java", "Firebase"],
+  },
+  {
+    title: "Web",
+    skills: ["TypeScript", "React", "React Router", "Tailwind CSS", "SQL"],
+  },
+  {
+    title: "Testing & tooling",
+    skills: ["Vitest", "Playwright", "Storybook", "Git"],
+  },
 ];
+
+export const SKILLS = SKILL_GROUPS.flatMap(({ skills }) => skills);
 
 export const ROADMAP: RoadmapStep[] = [
   {

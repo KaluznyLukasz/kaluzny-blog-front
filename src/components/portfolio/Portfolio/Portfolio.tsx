@@ -1,3 +1,4 @@
+import ContactCta from "../../shared/ContactCta/ContactCta";
 import PageHeader from "../../shared/PageHeader/PageHeader";
 import Reveal from "../../shared/Reveal/Reveal";
 import ZigZagSection from "../../shared/ZigZagSection/ZigZagSection";
@@ -20,6 +21,7 @@ const Portfolio = () => {
           <ProjectCard {...project} />
         </ZigZagSection>
       ))}
+      <ContactCta />
     </>
   );
 };
