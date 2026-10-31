@@ -4,9 +4,9 @@ import { PLACEHOLDER_LINE_WIDTHS } from "./ArticleLoading.constants";
 const ArticleLoading = () => {
   return (
     <div role="status" className="flex flex-col gap-4">
-      <p className="text-center text-gi-dark-gray sm:text-left">
+      <h1 className="text-center text-gi-dark-gray sm:text-left">
         {ARTICLE_MESSAGES.loading}
-      </p>
+      </h1>
       <div
         aria-hidden="true"
         className="flex flex-col overflow-hidden rounded-4xl border border-gi-ash bg-background/60 motion-safe:animate-pulse"

@@ -17,7 +17,7 @@ const ContactCta = () => {
         <h2 id={headingId} className="font-extrabold text-3xl sm:text-4xl">
           {CONTACT_CTA_MESSAGES.title}
         </h2>
-        <p className="max-w-xl text-lg text-white/90 leading-relaxed">
+        <p className="max-w-xl text-lg leading-relaxed">
           {CONTACT_CTA_MESSAGES.text}
         </p>
         <ButtonLink
