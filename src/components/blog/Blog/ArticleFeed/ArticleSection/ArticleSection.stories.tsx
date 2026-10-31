@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router";
 
+import coverImage from "../../../../../assets/images/skiatos.jpeg";
 import ArticleSection from "./ArticleSection";
 
 const meta = {
@@ -39,6 +40,19 @@ export const Left: Story = {
   args: {
     side: "left",
     accent: "orange",
+  },
+};
+
+export const WithCoverImage: Story = {
+  args: {
+    imageUrl: coverImage,
+  },
+};
+
+export const WithCoverImageOnTheLeft: Story = {
+  args: {
+    imageUrl: coverImage,
+    side: "left",
   },
 };
 
