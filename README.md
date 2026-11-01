@@ -123,9 +123,17 @@ Before the first `yarn e2e` run, install the browser with `yarn playwright insta
 | `/blog`          | Articles from the API                                                                         |
 | `/articles/:id`  | One article, with reading progress and a button that copies its link                          |
 | `/contact`       | Ways to reach me (add `{ kind: "email", ... }` to `src/constants/contacts.ts` to show email)  |
+| `/privacy`       | Privacy policy (GDPR information), linked from the footer                                     |
+| `/legal`         | Legal notice: who runs the site, copyright, trademarks and open-source licences               |
 | anything else    | "Page not found" (`src/pages/$.tsx`); unexpected errors show the error page from `root.tsx` |
 
 Every page sets its title and description for search engines and link previews with `createMeta` (`src/utils/createMeta.ts`). Crawler rules are in `public/robots.txt`. Because the app is a single-page app (`ssr: false`), the host must answer unknown addresses with `index.html`.
+
+### Privacy and licences
+
+The site sets no cookies, keeps nothing in browser storage and loads nothing from other servers (no web fonts, analytics or embeds), so it needs no cookie banner. An end-to-end test (`e2e/legal/legal.spec.ts`) fails if a page starts contacting another server or storing anything. If you add something that does (Google Fonts, analytics, a YouTube video, a contact form...), self-host it where you can and update the privacy policy in `src/components/legal/PrivacyPolicy/PrivacyPolicy.constants.ts`, together with its date.
+
+`yarn build` writes the licences of every bundled package to `build/client/third-party-licenses.txt` (`build.license` in `vite.config.ts`); the legal notice links to it.
 
 ## Accessibility
 

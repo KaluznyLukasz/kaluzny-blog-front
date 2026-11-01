@@ -64,6 +64,14 @@ const SCREENS: Screen[] = [
     open: (page) => openAndWaitFor(page, "/contact", mainHeading),
   },
   {
+    name: "the privacy policy",
+    open: (page) => openAndWaitFor(page, "/privacy", mainHeading),
+  },
+  {
+    name: "the legal notice",
+    open: (page) => openAndWaitFor(page, "/legal", mainHeading),
+  },
+  {
     name: "an unknown address",
     open: (page) => openAndWaitFor(page, "/no-such-page", mainHeading),
   },
@@ -271,7 +279,14 @@ test.describe("Given a keyboard user", () => {
 test.describe("Given a visitor who zooms in to 400 %", () => {
   test.use({ viewport: ZOOMED_IN });
 
-  for (const path of ["/", "/portfolio", "/blog", "/contact"]) {
+  for (const path of [
+    "/",
+    "/portfolio",
+    "/blog",
+    "/contact",
+    "/privacy",
+    "/legal",
+  ]) {
     test.describe(`when they scroll through ${path}`, () => {
       test("then every section becomes fully visible, however tall it is", async ({
         page,

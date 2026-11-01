@@ -14,6 +14,12 @@ export const BLOG_PATH = "/blog";
 
 export const CONTACT_PATH = "/contact";
 
+export const PRIVACY_PATH = "/privacy";
+
+export const LEGAL_PATH = "/legal";
+
+export const THIRD_PARTY_LICENSES_PATH = "/third-party-licenses.txt";
+
 export const PUBLISHED_DATE_FORMAT = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "long",
   timeZone: "Europe/Warsaw",

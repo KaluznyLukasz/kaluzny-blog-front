@@ -15,6 +15,16 @@ const PAGES = [
     title: `Contact · ${SITE_NAME}`,
     description: /channel/i,
   },
+  {
+    path: "/privacy",
+    title: `Privacy policy · ${SITE_NAME}`,
+    description: /your data/i,
+  },
+  {
+    path: "/legal",
+    title: `Legal notice · ${SITE_NAME}`,
+    description: /open-source/i,
+  },
 ];
 
 test.describe("Given a search engine or a chat app reading my pages", () => {

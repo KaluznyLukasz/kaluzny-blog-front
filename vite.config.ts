@@ -5,6 +5,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter()],
+  build: {
+    license: { fileName: "third-party-licenses.txt" },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
