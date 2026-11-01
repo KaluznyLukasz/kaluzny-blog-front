@@ -42,6 +42,13 @@ export const WithAppStoreOnly: Story = {
   },
 };
 
+export const WithStatusAndTags: Story = {
+  args: {
+    status: "live",
+    tags: ["iOS", "Android", "Apple Watch", "Widgets"],
+  },
+};
+
 export const WithoutLinks: Story = {
   args: {
     name: "Neighborly",

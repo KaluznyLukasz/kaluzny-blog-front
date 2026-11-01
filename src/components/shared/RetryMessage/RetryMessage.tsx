@@ -1,5 +1,7 @@
-import { Button, InfoMessage } from "@gi-org-pl/athena";
+import { Button } from "@gi-org-pl/athena";
 import { RotateCw } from "lucide-react";
+import { focusMainContent } from "../PageLayout/utils/focusMainContent";
+import StatusMessage from "../StatusMessage/StatusMessage";
 
 interface Props {
   message: string;
@@ -8,16 +10,22 @@ interface Props {
 }
 
 const RetryMessage = ({ message, retryLabel, onRetry }: Props) => {
+  // The button disappears while loading again, so keep keyboard users on the page
+  const retry = () => {
+    focusMainContent();
+    onRetry();
+  };
+
   return (
     <div className="flex flex-col items-center gap-4 sm:items-start">
-      <InfoMessage role="alert" variant="error">
+      <StatusMessage role="alert" variant="error">
         {message}
-      </InfoMessage>
+      </StatusMessage>
       <Button
         type="outlined"
         LeftIcon={<RotateCw />}
-        onClick={onRetry}
-        className="focus-visible:outline-2 focus-visible:outline-gi-secondary focus-visible:outline-offset-2 [&_svg_*]:fill-none [&_svg_*]:stroke-current"
+        onClick={retry}
+        className="focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gi-secondary focus-visible:outline-offset-2 [&_svg_*]:fill-none [&_svg_*]:stroke-current"
       >
         {retryLabel}
       </Button>

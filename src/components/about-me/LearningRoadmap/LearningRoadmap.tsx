@@ -1,5 +1,5 @@
-import { Badge } from "@gi-org-pl/athena";
 import { twMerge } from "tailwind-merge";
+import StatusBadge from "../../shared/StatusBadge/StatusBadge";
 import { ROADMAP_STATUS } from "./LearningRoadmap.constants";
 import type { RoadmapStep } from "./LearningRoadmap.types";
 
@@ -28,7 +28,7 @@ const LearningRoadmap = ({ steps }: Props) => {
             <div className="flex min-w-0 flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-bold text-gi-primary">{title}</h3>
-                <Badge type={badgeType}>{label}</Badge>
+                <StatusBadge type={badgeType}>{label}</StatusBadge>
               </div>
               <p className="leading-relaxed">{description}</p>
             </div>

@@ -1,12 +1,14 @@
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { Link } from "react-router";
 import { BLOG_PATH } from "../../../constants/common";
-import RetryMessage from "../../shared/RetryMessage/RetryMessage";
+import ButtonLink from "../../shared/ButtonLink/ButtonLink";
 import { ARTICLE_MESSAGES } from "./Article.constants";
 import type { ArticleState } from "./Article.types";
 import ArticleContent from "./ArticleContent/ArticleContent";
+import ArticleError from "./ArticleError/ArticleError";
 import ArticleLoading from "./ArticleLoading/ArticleLoading";
 import ArticleNotFound from "./ArticleNotFound/ArticleNotFound";
+import ReadingProgress from "./ReadingProgress/ReadingProgress";
 import { useArticle } from "./utils/useArticle";
 
 interface Props {
@@ -23,25 +25,20 @@ const renderState = (state: ArticleState, onRetry: () => void) => {
   }
 
   if (state.status === "error") {
-    return (
-      <RetryMessage
-        message={ARTICLE_MESSAGES.error}
-        retryLabel={ARTICLE_MESSAGES.retry}
-        onRetry={onRetry}
-      />
-    );
+    return <ArticleError onRetry={onRetry} />;
   }
 
   return (
     <>
+      <ReadingProgress />
       <ArticleContent {...state.article} />
-      <Link
+      <ButtonLink
         to={BLOG_PATH}
-        className="inline-flex items-center gap-2 self-center rounded-full bg-gi-primary px-6 py-3 font-medium text-white transition-colors hover:bg-gi-primary-hover focus-visible:outline-2 focus-visible:outline-gi-secondary focus-visible:outline-offset-2"
+        LeftIcon={<BookOpen />}
+        className="self-center"
       >
-        <BookOpen aria-hidden="true" className="size-4 shrink-0" />
         {ARTICLE_MESSAGES.more}
-      </Link>
+      </ButtonLink>
     </>
   );
 };

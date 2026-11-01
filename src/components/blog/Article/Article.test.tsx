@@ -235,6 +235,12 @@ describe("<Article />", () => {
         ARTICLE_MESSAGES.error,
       );
       expect(
+        screen.getByRole("heading", {
+          level: 1,
+          name: ARTICLE_MESSAGES.errorTitle,
+        }),
+      ).toBeInTheDocument();
+      expect(
         screen.getByRole("button", { name: ARTICLE_MESSAGES.retry }),
       ).toBeEnabled();
       expect(screen.queryByRole("article")).not.toBeInTheDocument();

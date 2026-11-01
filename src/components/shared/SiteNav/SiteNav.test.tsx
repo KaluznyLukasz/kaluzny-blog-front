@@ -12,7 +12,7 @@ const renderAt = (path: string) =>
 
 describe("<SiteNav />", () => {
   describe("when rendered", () => {
-    it("shows the main navigation with three pages, in order", () => {
+    it("shows the main navigation with four pages, in order", () => {
       renderAt("/");
       const nav = screen.getByRole("navigation", { name: "Main" });
 
@@ -24,6 +24,7 @@ describe("<SiteNav />", () => {
         ["About me", "/"],
         ["Portfolio", "/portfolio"],
         ["Blog", "/blog"],
+        ["Contact", "/contact"],
       ]);
     });
   });
@@ -41,6 +42,27 @@ describe("<SiteNav />", () => {
       ).not.toHaveAttribute("aria-current");
       expect(screen.getByRole("link", { name: "Blog" })).not.toHaveAttribute(
         "aria-current",
+      );
+      expect(screen.getByRole("link", { name: "Contact" })).not.toHaveAttribute(
+        "aria-current",
+      );
+    });
+  });
+
+  describe("when the links do not fit on one line, as on a narrow or zoomed-in screen", () => {
+    it("wraps them onto the next line instead of cutting them off", () => {
+      renderAt("/");
+
+      expect(screen.getByRole("list")).toHaveClass("flex-wrap");
+    });
+  });
+
+  describe("when the visitor uses a high contrast theme, which removes backgrounds", () => {
+    it("still marks the current page, with an underline", () => {
+      renderAt("/");
+
+      expect(screen.getByRole("link", { name: "About me" })).toHaveClass(
+        "forced-colors:aria-[current=page]:underline",
       );
     });
   });

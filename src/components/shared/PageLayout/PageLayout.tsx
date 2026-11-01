@@ -1,14 +1,18 @@
 import type { ReactNode } from "react";
-import { SITE_NAME } from "../../../constants/common";
+import { Link } from "react-router";
+import { HOME_PATH, SITE_NAME } from "../../../constants/common";
 import SiteFooter from "../SiteFooter/SiteFooter";
 import SiteNav from "../SiteNav/SiteNav";
 import { MAIN_CONTENT_ID } from "./PageLayout.constants";
+import { useNavigationFocus } from "./utils/useNavigationFocus";
 
 interface Props {
   children: ReactNode;
 }
 
 const PageLayout = ({ children }: Props) => {
+  const announcement = useNavigationFocus();
+
   return (
     <div className="flex min-h-dvh flex-col overflow-x-clip">
       <a
@@ -27,9 +31,12 @@ const PageLayout = ({ children }: Props) => {
       </div>
       <header className="sticky top-0 z-10 border-gi-ash border-b bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-center px-4 py-3 sm:justify-between sm:px-6">
-          <span className="hidden font-extrabold text-gi-primary sm:inline">
+          <Link
+            to={HOME_PATH}
+            className="hidden rounded-sm font-extrabold text-gi-primary focus-visible:outline-2 focus-visible:outline-gi-secondary focus-visible:outline-offset-2 sm:inline"
+          >
             {SITE_NAME}
-          </span>
+          </Link>
           <SiteNav />
         </div>
       </header>
@@ -41,6 +48,9 @@ const PageLayout = ({ children }: Props) => {
         {children}
       </main>
       <SiteFooter />
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import { InfoMessage } from "@gi-org-pl/athena";
 import { twMerge } from "tailwind-merge";
 import RetryMessage from "../../../shared/RetryMessage/RetryMessage";
+import StatusMessage from "../../../shared/StatusMessage/StatusMessage";
 import { ZIG_ZAG_ROW_CLASSES } from "../../../shared/ZigZagSection/ZigZagSection.constants";
 import type { ArticlesState } from "../Blog.types";
 import {
@@ -56,9 +56,9 @@ const ArticleFeed = ({ state, onRetry }: Props) => {
 
   if (state.articles.length === 0) {
     return (
-      <InfoMessage role="status" variant="info">
+      <StatusMessage role="status" variant="info">
         {FEED_MESSAGES.empty}
-      </InfoMessage>
+      </StatusMessage>
     );
   }
 

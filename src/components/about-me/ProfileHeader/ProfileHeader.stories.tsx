@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { MapPin, Rocket } from "lucide-react";
 
 import skiathosPhoto from "../../../assets/images/skiatos.jpeg";
 import ProfileHeader from "./ProfileHeader";
@@ -26,6 +27,19 @@ export const WithPhoto: Story = {
 };
 
 export const WithInitials: Story = {};
+
+export const Full: Story = {
+  args: {
+    photo: skiathosPhoto,
+    tagline:
+      "I build iOS and Android apps that turn everyday problems into something simple and enjoyable to use.",
+    facts: [
+      { Icon: MapPin, label: "Based in Poland" },
+      { Icon: Rocket, label: "Learning Android with Kotlin" },
+    ],
+    children: <button type="button">Get in touch</button>,
+  },
+};
 
 export const LongName: Story = {
   args: {

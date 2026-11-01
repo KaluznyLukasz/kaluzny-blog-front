@@ -101,7 +101,7 @@ describe("<ArticleFeed />", () => {
       expect(stripOf("May")).toContain("bg-gi-primary");
       expect(stripOf("Apr")).toContain("bg-gi-orange");
       expect(stripOf("Mar")).toContain("bg-gi-secondary");
-      expect(stripOf("Feb")).toContain("bg-gi-blue");
+      expect(stripOf("Feb")).toContain("bg-gi-blue-hover");
       expect(stripOf("Jan")).toContain("bg-gi-primary");
     });
   });

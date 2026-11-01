@@ -1,22 +1,18 @@
 import { SearchX } from "lucide-react";
+import { SITE_NAME } from "../../../../constants/common";
+import { useDocumentTitle } from "../../../../utils/useDocumentTitle";
+import StatusCard from "../../../shared/StatusCard/StatusCard";
 import { ARTICLE_MESSAGES } from "../Article.constants";
 
 const ArticleNotFound = () => {
+  useDocumentTitle(`${ARTICLE_MESSAGES.notFound} · ${SITE_NAME}`);
+
   return (
-    <div className="flex flex-col items-center gap-4 rounded-4xl border border-gi-ash bg-linear-to-br from-gi-blue-lightest via-background to-background px-6 py-12 text-center shadow-sm sm:py-16">
-      <span
-        aria-hidden="true"
-        className="flex size-16 items-center justify-center rounded-full bg-background text-gi-secondary shadow-sm ring-1 ring-gi-ash"
-      >
-        <SearchX className="size-8" />
-      </span>
-      <h1 className="font-extrabold text-3xl text-gi-primary sm:text-4xl">
-        {ARTICLE_MESSAGES.notFound}
-      </h1>
-      <p className="text-gi-dark-gray text-lg">
-        {ARTICLE_MESSAGES.notFoundHint}
-      </p>
-    </div>
+    <StatusCard
+      Icon={<SearchX />}
+      title={ARTICLE_MESSAGES.notFound}
+      hint={ARTICLE_MESSAGES.notFoundHint}
+    />
   );
 };
 

@@ -13,7 +13,6 @@ import {
   sizeOf,
 } from "../blog/articlesApi";
 
-const TITLE = "Article · Łukasz Kałużny";
 const PHONE = { width: 360, height: 800 };
 const LONG_WORD = "Wolfeschlegelsteinhausenbergerdorff".repeat(5);
 
@@ -34,6 +33,7 @@ const COVERED = {
 const LIST = [COVERED, ARTICLE, OTHER_ARTICLE];
 const COVERED_PATH = `/articles/${COVERED.id}`;
 const ARTICLE_PATH = `/articles/${ARTICLE.id}`;
+const ARTICLE_TITLE = `${ARTICLE.title} · Łukasz Kałużny`;
 const MISSING_ID = "5e1f0a2b-0001-4000-8000-0000000000ff";
 
 const navigation = (page: Page) =>
@@ -70,7 +70,7 @@ test.describe("Given a visitor on the about me page", () => {
       await readMore(page, ARTICLE.title).click();
 
       await expect(page).toHaveURL(ARTICLE_PATH);
-      await expect(page).toHaveTitle(TITLE);
+      await expect(page).toHaveTitle(ARTICLE_TITLE);
       await expect(articleHeading(page)).toHaveText(ARTICLE.title);
       await expect(page.getByRole("main").locator("time")).toHaveText(
         "14 February 2025",
@@ -185,7 +185,7 @@ test.describe("Given a visitor with a bookmark", () => {
 
       await page.goto(ARTICLE_PATH);
 
-      await expect(page).toHaveTitle(TITLE);
+      await expect(page).toHaveTitle(ARTICLE_TITLE);
       await expect(articleHeading(page)).toHaveText(ARTICLE.title);
       expect(listRequests).toEqual([]);
     });
@@ -460,6 +460,60 @@ test.describe("Given an article with a very long title and a very long word", ()
   });
 });
 
+test.describe("Given a visitor reads an article", () => {
+  test.describe("when they want to share it", () => {
+    test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+    test("then a button copies the address of the article and says so", async ({
+      page,
+    }) => {
+      await serveArticle(page, ARTICLE);
+      await page.goto(ARTICLE_PATH);
+
+      await page.getByRole("button", { name: "Copy link" }).click();
+
+      await expect(
+        page.getByRole("button", { name: "Link copied" }),
+      ).toBeVisible();
+      expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
+        new RegExp(`${ARTICLE_PATH}$`),
+      );
+      await expect(
+        page.getByRole("button", { name: "Copy link" }),
+      ).toBeVisible();
+    });
+  });
+
+  test.describe("when they scroll down a long article", () => {
+    test("then a bar at the top of the screen fills as they read", async ({
+      page,
+    }) => {
+      await serveArticle(page, {
+        ...ARTICLE,
+        content: Array.from(
+          { length: 60 },
+          (_, index) => `Paragraph ${index + 1} of a long article.`,
+        ).join("\n\n"),
+      });
+      await page.goto(ARTICLE_PATH);
+      const bar = page.locator("[aria-hidden='true'][style*='scaleX']");
+      const filled = () =>
+        bar.evaluate(
+          (element) => new DOMMatrix(getComputedStyle(element).transform).a,
+        );
+
+      await expect(articleHeading(page)).toHaveText(ARTICLE.title);
+      expect(await filled()).toBe(0);
+
+      await page.evaluate(() =>
+        window.scrollTo(0, document.documentElement.scrollHeight),
+      );
+
+      await expect.poll(filled).toBe(1);
+    });
+  });
+});
+
 test.describe("Given an article with a cover image", () => {
   test.describe("when a visitor opens it", () => {
     test("then the image is at the top of the card, between the header and the text", async ({
@@ -510,7 +564,7 @@ test.describe("Given an article with a cover image", () => {
 
       await page.goto(COVERED_PATH);
 
-      await expect(page).toHaveTitle(TITLE);
+      await expect(page).toHaveTitle(`${COVERED.title} · Łukasz Kałużny`);
       await expect(page.getByRole("main").locator("time")).toHaveText(
         "2 April 2025",
       );

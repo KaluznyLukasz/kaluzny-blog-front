@@ -10,7 +10,14 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    skills: ["TypeScript", "React", "Tailwind CSS", "Nest.js", "PostgreSQL"],
+    groups: [
+      { title: "Mobile", skills: ["Swift", "SwiftUI", "Kotlin"] },
+      {
+        title: "Web",
+        skills: ["TypeScript", "React", "Tailwind CSS", "Nest.js"],
+      },
+      { title: "Data & tooling", skills: ["PostgreSQL", "Git"] },
+    ],
   },
 } satisfies Meta<typeof SkillList>;
 
@@ -19,8 +26,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const SingleSkill: Story = {
+export const SingleGroup: Story = {
   args: {
-    skills: ["TypeScript"],
+    groups: [{ title: "Web", skills: ["TypeScript"] }],
   },
 };
