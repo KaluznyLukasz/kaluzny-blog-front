@@ -49,6 +49,24 @@ describe("<SiteNav />", () => {
     });
   });
 
+  describe("when the links do not fit on one line, as on a narrow or zoomed-in screen", () => {
+    it("wraps them onto the next line instead of cutting them off", () => {
+      renderAt("/");
+
+      expect(screen.getByRole("list")).toHaveClass("flex-wrap");
+    });
+  });
+
+  describe("when the visitor uses a high contrast theme, which removes backgrounds", () => {
+    it("still marks the current page, with an underline", () => {
+      renderAt("/");
+
+      expect(screen.getByRole("link", { name: "About me" })).toHaveClass(
+        "forced-colors:aria-[current=page]:underline",
+      );
+    });
+  });
+
   describe("when the visitor chooses another page", () => {
     it("marks the chosen page as the current one", () => {
       renderAt("/");

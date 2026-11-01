@@ -4,12 +4,15 @@ import { HOME_PATH, SITE_NAME } from "../../../constants/common";
 import SiteFooter from "../SiteFooter/SiteFooter";
 import SiteNav from "../SiteNav/SiteNav";
 import { MAIN_CONTENT_ID } from "./PageLayout.constants";
+import { useNavigationFocus } from "./utils/useNavigationFocus";
 
 interface Props {
   children: ReactNode;
 }
 
 const PageLayout = ({ children }: Props) => {
+  const announcement = useNavigationFocus();
+
   return (
     <div className="flex min-h-dvh flex-col overflow-x-clip">
       <a
@@ -45,6 +48,9 @@ const PageLayout = ({ children }: Props) => {
         {children}
       </main>
       <SiteFooter />
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
     </div>
   );
 };

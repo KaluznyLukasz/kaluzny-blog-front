@@ -25,6 +25,22 @@ describe("<ContactCta />", () => {
       expect(screen.getByText(CONTACT_CTA_MESSAGES.text)).toBeInTheDocument();
     });
 
+    it("keeps the text solid white, readable across the whole gradient", () => {
+      render(<ContactCta />, { wrapper: MemoryRouter });
+
+      expect(screen.getByText(CONTACT_CTA_MESSAGES.text).className).not.toMatch(
+        /text-white\//,
+      );
+    });
+
+    it("shows a white focus outline on its link, visible on the gradient", () => {
+      render(<ContactCta />, { wrapper: MemoryRouter });
+
+      expect(
+        screen.getByRole("link", { name: CONTACT_CTA_MESSAGES.action }),
+      ).toHaveClass("focus-visible:outline-white");
+    });
+
     it("links to the contact page", () => {
       render(<ContactCta />, { wrapper: MemoryRouter });
 

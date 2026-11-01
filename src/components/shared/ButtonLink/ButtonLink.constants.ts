@@ -8,5 +8,5 @@ export const BUTTON_LINK_VARIANT_CLASSES: Record<ButtonLinkVariant, string> = {
     "border-gi-primary bg-gi-primary text-white hover:border-gi-primary-hover hover:bg-gi-primary-hover",
   outlined: "border-gi-primary text-gi-primary hover:bg-gi-ash",
   inverted:
-    "border-white bg-white text-gi-primary hover:border-gi-ash hover:bg-gi-ash",
+    "border-white bg-white text-gi-primary hover:border-gi-ash hover:bg-gi-ash focus-visible:outline-white",
 };

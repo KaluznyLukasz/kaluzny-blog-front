@@ -9,6 +9,8 @@ const stubClipboard = (writeText: () => Promise<void>) =>
     configurable: true,
   });
 
+const announcement = () => document.querySelector("[aria-live='polite']");
+
 const press = async () => {
   await act(async () => {
     fireEvent.click(screen.getByRole("button"));
@@ -33,6 +35,13 @@ describe("<CopyLinkButton />", () => {
         screen.getByRole("button", { name: COPY_STATUS.idle.label }),
       ).toBeInTheDocument();
     });
+
+    it("has nothing to announce yet, outside the button", () => {
+      render(<CopyLinkButton />);
+
+      expect(announcement()).toBeEmptyDOMElement();
+      expect(screen.getByRole("button")).not.toContainElement(announcement());
+    });
   });
 
   describe("when the visitor presses it", () => {
@@ -46,16 +55,36 @@ describe("<CopyLinkButton />", () => {
       expect(writeText).toHaveBeenCalledWith(window.location.href);
     });
 
+    it("confirms it on the button", async () => {
+      stubClipboard(vi.fn().mockResolvedValue(undefined));
+      render(<CopyLinkButton />);
+
+      await press();
+
+      expect(
+        screen.getByRole("button", { name: COPY_STATUS.copied.label }),
+      ).toBeInTheDocument();
+    });
+
     it("confirms it, in a way screen readers announce", async () => {
       stubClipboard(vi.fn().mockResolvedValue(undefined));
       render(<CopyLinkButton />);
 
       await press();
 
-      expect(screen.getByText(COPY_STATUS.copied.label)).toHaveAttribute(
-        "aria-live",
-        "polite",
-      );
+      expect(announcement()).toHaveTextContent(COPY_STATUS.copied.label);
+    });
+
+    it("does not announce the label switching back", async () => {
+      stubClipboard(vi.fn().mockResolvedValue(undefined));
+      render(<CopyLinkButton />);
+
+      await press();
+      act(() => {
+        vi.advanceTimersByTime(COPY_FEEDBACK_MS);
+      });
+
+      expect(announcement()).toBeEmptyDOMElement();
     });
 
     it("offers to copy again after a moment", async () => {
@@ -85,7 +114,9 @@ describe("<CopyLinkButton />", () => {
         vi.advanceTimersByTime(COPY_FEEDBACK_MS - 100);
       });
 
-      expect(screen.getByText(COPY_STATUS.copied.label)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: COPY_STATUS.copied.label }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -96,7 +127,10 @@ describe("<CopyLinkButton />", () => {
 
       await press();
 
-      expect(screen.getByText(COPY_STATUS.failed.label)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: COPY_STATUS.failed.label }),
+      ).toBeInTheDocument();
+      expect(announcement()).toHaveTextContent(COPY_STATUS.failed.label);
     });
   });
 
@@ -106,7 +140,10 @@ describe("<CopyLinkButton />", () => {
 
       await press();
 
-      expect(screen.getByText(COPY_STATUS.failed.label)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: COPY_STATUS.failed.label }),
+      ).toBeInTheDocument();
+      expect(announcement()).toHaveTextContent(COPY_STATUS.failed.label);
     });
   });
 

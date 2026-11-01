@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 import { SITE_NAME } from "../../../constants/common";
@@ -48,6 +48,26 @@ describe("<PageLayout />", () => {
 
       expect(main.compareDocumentPosition(footer)).toBe(
         Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    });
+  });
+
+  describe("when the visitor goes to another page", () => {
+    it("moves focus to the new content and announces the page", () => {
+      document.title = `Blog · ${SITE_NAME}`;
+      renderLayout();
+
+      fireEvent.click(
+        within(screen.getByRole("navigation", { name: "Main" })).getByRole(
+          "link",
+          { name: "Blog" },
+        ),
+      );
+
+      expect(screen.getByRole("main")).toHaveFocus();
+      expect(screen.getByText(`Blog · ${SITE_NAME}`)).toHaveAttribute(
+        "aria-live",
+        "polite",
       );
     });
   });
