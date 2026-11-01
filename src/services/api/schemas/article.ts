@@ -7,6 +7,8 @@ export const articleSchema = z.object({
   title: z.string().min(1),
   content: z.string(),
   publishedAt: z.iso.datetime({ offset: true }),
+  imageId: z.string().nullish(),
+  imageUrl: z.string().nullish(),
 });
 
 export const articleListSchema = z.array(articleSchema);

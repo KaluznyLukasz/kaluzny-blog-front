@@ -3,18 +3,19 @@ import { twMerge } from "tailwind-merge";
 import { PUBLISHED_DATE_FORMAT } from "../../../../constants/common";
 import type { Article } from "../../../../services/api/schemas/article";
 import {
+  COVER_IMAGE_CLASSES,
   ENTER_ANIMATION_CLASSES,
   LEAD_PARAGRAPH_CLASSES,
 } from "./ArticleContent.constants";
 import { getReadingMinutes } from "./utils/getReadingMinutes";
 import { splitParagraphs } from "./utils/splitParagraphs";
 
-type Props = Pick<Article, "title" | "content" | "publishedAt">;
+type Props = Pick<Article, "title" | "content" | "publishedAt" | "imageUrl">;
 
 const CHIP_CLASSES =
   "inline-flex items-center gap-2 rounded-full px-3 py-1 font-medium";
 
-const ArticleContent = ({ title, content, publishedAt }: Props) => {
+const ArticleContent = ({ title, content, publishedAt, imageUrl }: Props) => {
   const paragraphs = splitParagraphs(content);
   const readingMinutes = getReadingMinutes(content);
 
@@ -51,6 +52,14 @@ const ArticleContent = ({ title, content, publishedAt }: Props) => {
           {title}
         </h1>
       </header>
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt=""
+          fetchPriority="high"
+          className={COVER_IMAGE_CLASSES}
+        />
+      )}
       <div className="flex flex-col gap-6 px-6 py-8 text-lg leading-8 sm:px-12 sm:py-12">
         {paragraphs.map((paragraph, index) => (
           <p

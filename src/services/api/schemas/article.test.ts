@@ -8,6 +8,12 @@ const ARTICLE = {
   publishedAt: "2025-01-10T09:00:00.000Z",
 };
 
+const IMAGE = {
+  imageId: "616ad187-7d8e-4e85-912d-36c743357d1a",
+  imageUrl:
+    "http://localhost/api/v1/images/616ad187-7d8e-4e85-912d-36c743357d1a",
+};
+
 describe("articleListSchema", () => {
   describe("when the answer is a list of articles", () => {
     it("accepts it", () => {
@@ -24,6 +30,26 @@ describe("articleListSchema", () => {
       expect(articleListSchema.parse([{ ...ARTICLE, author: "Me" }])).toEqual([
         ARTICLE,
       ]);
+    });
+  });
+
+  describe("when an article has a cover image", () => {
+    it("keeps the ID and the address of the image", () => {
+      expect(articleListSchema.parse([{ ...ARTICLE, ...IMAGE }])).toEqual([
+        { ...ARTICLE, ...IMAGE },
+      ]);
+    });
+  });
+
+  describe("when an article has no cover image", () => {
+    it("accepts null for both fields", () => {
+      const article = { ...ARTICLE, imageId: null, imageUrl: null };
+
+      expect(articleListSchema.parse([article])).toEqual([article]);
+    });
+
+    it("accepts an older API that does not send the fields at all", () => {
+      expect(articleListSchema.parse([ARTICLE])).toEqual([ARTICLE]);
     });
   });
 
@@ -74,6 +100,35 @@ describe("articleSchema", () => {
       expect(articleSchema.parse({ ...ARTICLE, content }).content).toBe(
         content,
       );
+    });
+
+    it("keeps the ID and the address of the cover image", () => {
+      expect(articleSchema.parse({ ...ARTICLE, ...IMAGE })).toEqual({
+        ...ARTICLE,
+        ...IMAGE,
+      });
+    });
+
+    it("accepts null instead of a cover image", () => {
+      const article = { ...ARTICLE, imageId: null, imageUrl: null };
+
+      expect(articleSchema.parse(article)).toEqual(article);
+    });
+
+    it("accepts a missing cover image, for an older API", () => {
+      const { imageId, imageUrl } = articleSchema.parse(ARTICLE);
+
+      expect(imageId).toBeUndefined();
+      expect(imageUrl).toBeUndefined();
+    });
+  });
+
+  describe("when the cover image is not text", () => {
+    it.each([
+      ["a number as its ID", { ...ARTICLE, imageId: 42 }],
+      ["an object as its address", { ...ARTICLE, imageUrl: {} }],
+    ])("rejects an article with %s", (_, broken) => {
+      expect(articleSchema.safeParse(broken).success).toBe(false);
     });
   });
 

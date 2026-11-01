@@ -9,6 +9,9 @@ const ARTICLE = {
   publishedAt: "2025-02-14T12:30:00.000Z",
 };
 
+const IMAGE_URL =
+  "http://localhost/api/v1/images/616ad187-7d8e-4e85-912d-36c743357d1a";
+
 describe("<ArticleContent />", () => {
   describe("when rendered", () => {
     it("shows the title as the main heading of an article", () => {
@@ -52,6 +55,90 @@ describe("<ArticleContent />", () => {
         "It felt strange for a week.",
         "Then I stopped caring.",
       ]);
+    });
+  });
+
+  describe("when the article has a cover image", () => {
+    it("shows the image inside the article, just as it was given", () => {
+      render(<ArticleContent {...ARTICLE} imageUrl={IMAGE_URL} />);
+      const image = screen.getByRole("article").querySelector("img");
+
+      expect(image).toHaveAttribute("src", IMAGE_URL);
+    });
+
+    it("puts the image between the header and the text", () => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} imageUrl={IMAGE_URL} />,
+      );
+      const image = container.querySelector("img") as HTMLElement;
+      const header = container.querySelector("header") as HTMLElement;
+      const firstParagraph = container.querySelector("p") as HTMLElement;
+
+      expect(header.compareDocumentPosition(image)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+      expect(image.compareDocumentPosition(firstParagraph)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+      expect(header).not.toContainElement(image);
+    });
+
+    it("fills the width of the article and keeps a fixed shape, so the text never jumps", () => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} imageUrl={IMAGE_URL} />,
+      );
+
+      expect(container.querySelector("img")).toHaveClass(
+        "aspect-video",
+        "w-full",
+        "object-cover",
+      );
+    });
+
+    it("hides the image from screen readers, as the title is right above it", () => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} imageUrl={IMAGE_URL} />,
+      );
+
+      expect(container.querySelector("img")).toHaveAttribute("alt", "");
+      expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    });
+
+    it("loads the image at once and early, as it is at the top of the page", () => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} imageUrl={IMAGE_URL} />,
+      );
+      const image = container.querySelector("img");
+
+      expect(image).not.toHaveAttribute("loading", "lazy");
+      expect(image).toHaveAttribute("fetchpriority", "high");
+    });
+
+    it("leaves the rest of the article as it is", () => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} imageUrl={IMAGE_URL} />,
+      );
+
+      expect(
+        screen.getByRole("heading", { level: 1, name: ARTICLE.title }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("14 February 2025")).toBeInTheDocument();
+      expect(screen.getByText("1 min read")).toBeInTheDocument();
+      expect(container.querySelectorAll("p")).toHaveLength(3);
+    });
+  });
+
+  describe("when the article has no cover image", () => {
+    it.each([
+      ["null", null],
+      ["undefined", undefined],
+      ["an empty string", ""],
+    ])("shows no image when the address is %s", (_, imageUrl) => {
+      const { container } = render(
+        <ArticleContent {...ARTICLE} imageUrl={imageUrl} />,
+      );
+
+      expect(container.querySelector("img")).toBeNull();
     });
   });
 

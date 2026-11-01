@@ -12,6 +12,9 @@ const ARTICLE = {
   publishedAt: "2025-02-14T12:30:00.000Z",
 };
 
+const IMAGE_URL =
+  "http://localhost/api/v1/images/616ad187-7d8e-4e85-912d-36c743357d1a";
+
 const render = (ui: ReactElement) => renderInDom(ui, { wrapper: MemoryRouter });
 
 const getRow = () =>
@@ -47,13 +50,146 @@ describe("<ArticleSection />", () => {
     });
 
     it("shows a calendar page next to the section instead of an image", () => {
-      render(<ArticleSection {...ARTICLE} side="right" accent="primary" />);
+      const { container } = render(
+        <ArticleSection {...ARTICLE} side="right" accent="primary" />,
+      );
       const day = screen.getByText("14");
 
       expect(getRow()).toContainElement(day);
       expect(
         screen.getByRole("region", { name: ARTICLE.title }),
       ).not.toContainElement(day);
+      expect(container.querySelector("img")).toBeNull();
+      expect(day.closest(".hidden")).toHaveClass("lg:block");
+    });
+  });
+
+  describe("when the article has a cover image", () => {
+    it("shows the image next to the section, just as it was given", () => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+      const image = container.querySelector("img");
+
+      expect(image).toHaveAttribute("src", IMAGE_URL);
+      expect(getRow()).toContainElement(image);
+      expect(
+        screen.getByRole("region", { name: ARTICLE.title }),
+      ).not.toContainElement(image);
+    });
+
+    it("shows the image instead of the calendar page, never both", () => {
+      render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(screen.queryByText("14")).not.toBeInTheDocument();
+      expect(screen.queryByText("Feb")).not.toBeInTheDocument();
+    });
+
+    it("keeps the date in words next to the title", () => {
+      render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(screen.getByText("14 February 2025")).toHaveAttribute(
+        "datetime",
+        ARTICLE.publishedAt,
+      );
+    });
+
+    it("hides the image from screen readers, as the title is right next to it", () => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(container.querySelector("img")).toHaveAttribute("alt", "");
+      expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    });
+
+    it("loads the image only when it comes into view", () => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(container.querySelector("img")).toHaveAttribute("loading", "lazy");
+    });
+
+    it("keeps the image on small screens, where the calendar page is hidden", () => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(container.querySelector("img")?.parentElement).not.toHaveClass(
+        "hidden",
+      );
+    });
+
+    it("crops the image to a fixed shape, whatever its own shape is", () => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={IMAGE_URL}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(container.querySelector("img")).toHaveClass(
+        "aspect-4/3",
+        "w-full",
+        "object-cover",
+      );
+    });
+  });
+
+  describe("when the article has no cover image", () => {
+    it.each([
+      ["null", null],
+      ["undefined", undefined],
+      ["an empty string", ""],
+    ])("shows the calendar page when the address is %s", (_, imageUrl) => {
+      const { container } = render(
+        <ArticleSection
+          {...ARTICLE}
+          imageUrl={imageUrl}
+          side="right"
+          accent="primary"
+        />,
+      );
+
+      expect(getRow()).toContainElement(screen.getByText("14"));
+      expect(container.querySelector("img")).toBeNull();
     });
   });
 

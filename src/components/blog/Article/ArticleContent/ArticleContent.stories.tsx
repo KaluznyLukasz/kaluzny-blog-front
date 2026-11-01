@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import coverImage from "../../../../assets/images/skiatos.jpeg";
 import ArticleContent from "./ArticleContent";
 
 const meta = {
@@ -28,6 +29,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const WithCoverImage: Story = {
+  args: {
+    imageUrl: coverImage,
+  },
+};
 
 export const WithHtmlInContent: Story = {
   args: {

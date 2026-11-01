@@ -9,7 +9,10 @@ import { READ_MORE_LABEL } from "./ArticleSection.constants";
 import DateTile from "./DateTile/DateTile";
 import type { DateTileAccent } from "./DateTile/DateTile.types";
 
-type Props = Pick<Article, "id" | "title" | "content" | "publishedAt"> & {
+type Props = Pick<
+  Article,
+  "id" | "title" | "content" | "publishedAt" | "imageUrl"
+> & {
   side: ZigZagSide;
   accent: DateTileAccent;
 };
@@ -19,14 +22,22 @@ const ArticleSection = ({
   title,
   content,
   publishedAt,
+  imageUrl,
   side,
   accent,
 }: Props) => {
+  const image = imageUrl ? { src: imageUrl, alt: "" } : undefined;
+
   return (
     <ZigZagSection
       title={title}
       side={side}
-      aside={<DateTile publishedAt={publishedAt} accent={accent} />}
+      image={image}
+      aside={
+        image ? undefined : (
+          <DateTile publishedAt={publishedAt} accent={accent} />
+        )
+      }
     >
       <div className="flex flex-col gap-3">
         <time dateTime={publishedAt} className="text-gi-dark-gray text-sm">

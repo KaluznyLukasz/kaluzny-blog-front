@@ -106,6 +106,47 @@ describe("<ArticleFeed />", () => {
     });
   });
 
+  describe("when some articles have a cover image", () => {
+    const IMAGE_URL =
+      "http://localhost/api/v1/images/616ad187-7d8e-4e85-912d-36c743357d1a";
+    const articles = [
+      { ...article(3), imageId: "616ad187", imageUrl: IMAGE_URL },
+      { ...article(2), imageId: null, imageUrl: null },
+      article(1),
+    ];
+
+    it("passes the image of an article to its section, and only there", () => {
+      render(
+        <ArticleFeed
+          state={{ status: "success", articles }}
+          onRetry={vi.fn()}
+        />,
+      );
+      const imagesIn = (title: string) => rowOf(title)?.querySelectorAll("img");
+
+      expect(imagesIn("Article number 3")).toHaveLength(1);
+      expect(imagesIn("Article number 3")?.[0]).toHaveAttribute(
+        "src",
+        IMAGE_URL,
+      );
+      expect(imagesIn("Article number 2")).toHaveLength(0);
+      expect(imagesIn("Article number 1")).toHaveLength(0);
+    });
+
+    it("keeps the calendar page for the articles without an image", () => {
+      render(
+        <ArticleFeed
+          state={{ status: "success", articles }}
+          onRetry={vi.fn()}
+        />,
+      );
+
+      expect(screen.queryByText("Mar")).not.toBeInTheDocument();
+      expect(screen.getByText("Feb")).toBeInTheDocument();
+      expect(screen.getByText("Jan")).toBeInTheDocument();
+    });
+  });
+
   describe("when the API answered with no articles", () => {
     it("says there are no articles yet", () => {
       render(
