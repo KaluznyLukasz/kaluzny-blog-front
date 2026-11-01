@@ -27,6 +27,6 @@ export const ACCENT_STYLES: Record<DateTileAccent, AccentStyle> = {
   },
   blue: {
     tileClassName: "from-gi-blue/15",
-    stripClassName: "bg-gi-blue text-white",
+    stripClassName: "bg-gi-blue-hover text-white",
   },
 };

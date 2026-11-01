@@ -2,10 +2,10 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { Link } from "react-router";
 import { BLOG_PATH } from "../../../constants/common";
 import ButtonLink from "../../shared/ButtonLink/ButtonLink";
-import RetryMessage from "../../shared/RetryMessage/RetryMessage";
 import { ARTICLE_MESSAGES } from "./Article.constants";
 import type { ArticleState } from "./Article.types";
 import ArticleContent from "./ArticleContent/ArticleContent";
+import ArticleError from "./ArticleError/ArticleError";
 import ArticleLoading from "./ArticleLoading/ArticleLoading";
 import ArticleNotFound from "./ArticleNotFound/ArticleNotFound";
 import ReadingProgress from "./ReadingProgress/ReadingProgress";
@@ -25,13 +25,7 @@ const renderState = (state: ArticleState, onRetry: () => void) => {
   }
 
   if (state.status === "error") {
-    return (
-      <RetryMessage
-        message={ARTICLE_MESSAGES.error}
-        retryLabel={ARTICLE_MESSAGES.retry}
-        onRetry={onRetry}
-      />
-    );
+    return <ArticleError onRetry={onRetry} />;
   }
 
   return (

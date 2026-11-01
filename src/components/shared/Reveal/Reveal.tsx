@@ -12,6 +12,24 @@ interface Props {
 
 const canObserve = () => typeof IntersectionObserver !== "undefined";
 
+// Content taller than the screen can never be REVEAL_THRESHOLD visible (for
+// example when the page is zoomed in), so it is shown as soon as it appears.
+const isOnScreen = ({
+  isIntersecting,
+  intersectionRatio,
+  boundingClientRect,
+  rootBounds,
+}: IntersectionObserverEntry) => {
+  const screenHeight = rootBounds?.height ?? window.innerHeight;
+  const canReachThreshold =
+    boundingClientRect.height * REVEAL_THRESHOLD <= screenHeight;
+
+  return (
+    isIntersecting &&
+    (intersectionRatio >= REVEAL_THRESHOLD || !canReachThreshold)
+  );
+};
+
 const Reveal = ({ children, from = "bottom", delay = 0, className }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isRevealed, setIsRevealed] = useState(() => !canObserve());
@@ -21,11 +39,11 @@ const Reveal = ({ children, from = "bottom", delay = 0, className }: Props) => {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
+        if (entries.some(isOnScreen)) {
           setIsRevealed(true);
         }
       },
-      { threshold: REVEAL_THRESHOLD },
+      { threshold: [0, REVEAL_THRESHOLD] },
     );
     observer.observe(ref.current);
 

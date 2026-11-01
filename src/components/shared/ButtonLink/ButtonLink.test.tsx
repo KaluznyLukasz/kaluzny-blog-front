@@ -98,6 +98,18 @@ describe("<ButtonLink />", () => {
       );
     });
 
+    it("shows a white focus ring when white, so it stays visible on a dark background", () => {
+      renderButtonLink(
+        <ButtonLink to="/portfolio" variant="inverted">
+          White
+        </ButtonLink>,
+      );
+      const link = screen.getByRole("link", { name: "White" });
+
+      expect(link).toHaveClass("focus-visible:outline-white");
+      expect(link).not.toHaveClass("focus-visible:outline-gi-secondary");
+    });
+
     it("lets the caller add its own classes", () => {
       renderButtonLink(
         <ButtonLink to="/portfolio" className="w-full">

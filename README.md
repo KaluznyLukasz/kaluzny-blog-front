@@ -135,6 +135,21 @@ The site sets no cookies, keeps nothing in browser storage and loads nothing fro
 
 `yarn build` writes the licences of every bundled package to `build/client/third-party-licenses.txt` (`build.license` in `vite.config.ts`); the legal notice links to it.
 
+## Accessibility
+
+The site targets [WCAG 2.2](https://www.w3.org/TR/WCAG22/) level AA. `e2e/accessibility/accessibility.spec.ts` keeps it there:
+
+- it runs [axe](https://github.com/dequelabs/axe-core) on every page and state (loading, empty, error, not found) on a phone and a desktop screen, so any problem it can detect fails CI
+- it tabs through every page and checks that each link and button shows a focus outline
+- it checks the site at 400 % zoom, with wider text spacing and in a high contrast theme
+
+Some behaviour to keep when changing the code:
+
+- After an in-app navigation, focus moves to `<main>` and the new page title is announced (`useNavigationFocus` in `PageLayout`). Buttons that disappear when pressed move focus to `<main>` too (`focusMainContent`), so keyboard users are never sent back to the top.
+- Every page and state has exactly one `<h1>`.
+- Some Athena colours are too light for small text on white. Use `StatusBadge` instead of `Badge` with a type, and `StatusMessage` instead of `InfoMessage`. Athena's `Button` needs `focus-visible:outline-solid` next to the outline classes, or it shows no focus outline.
+- Animations must stop when the visitor prefers reduced motion (`motion-reduce:` / `motion-safe:`).
+
 ## Project structure
 
 ```text

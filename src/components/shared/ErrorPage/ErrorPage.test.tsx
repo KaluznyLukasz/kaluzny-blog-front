@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { SITE_NAME } from "../../../constants/common";
 import ErrorPage from "./ErrorPage";
 import { ERROR_PAGE_MESSAGES } from "./ErrorPage.constants";
 
@@ -19,6 +20,14 @@ describe("<ErrorPage />", () => {
           name: ERROR_PAGE_MESSAGES.title,
         }),
       ).toBeInTheDocument();
+    });
+
+    it("names the browser tab after the error", () => {
+      render(<ErrorPage />, { wrapper: MemoryRouter });
+
+      expect(document.title).toBe(
+        `${ERROR_PAGE_MESSAGES.title} · ${SITE_NAME}`,
+      );
     });
 
     it("explains what the visitor can do", () => {

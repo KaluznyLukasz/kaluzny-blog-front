@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { SITE_NAME } from "../../../../constants/common";
 import { ARTICLE_MESSAGES } from "../Article.constants";
 import ArticleNotFound from "./ArticleNotFound";
 
@@ -14,6 +15,14 @@ describe("<ArticleNotFound />", () => {
           name: ARTICLE_MESSAGES.notFound,
         }),
       ).toBeInTheDocument();
+    });
+
+    it("names the browser tab after the missing article", () => {
+      render(<ArticleNotFound />);
+
+      expect(document.title).toBe(
+        `${ARTICLE_MESSAGES.notFound} · ${SITE_NAME}`,
+      );
     });
 
     it("explains why it may be missing", () => {

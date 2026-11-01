@@ -1,22 +1,54 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Reveal from "./Reveal";
+import { REVEAL_THRESHOLD } from "./Reveal.constants";
+
+const SCREEN_HEIGHT = 800;
+
+interface Sighting {
+  visibleShare: number;
+  height?: number;
+  screenHeight?: number | null;
+}
 
 class IntersectionObserverMock {
   static latest: IntersectionObserverMock | undefined;
   readonly callback: IntersectionObserverCallback;
+  readonly options?: IntersectionObserverInit;
   readonly observe = vi.fn();
   readonly disconnect = vi.fn();
 
-  constructor(callback: IntersectionObserverCallback) {
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit,
+  ) {
     this.callback = callback;
+    this.options = options;
     IntersectionObserverMock.latest = this;
   }
 
   report(isIntersecting: boolean) {
+    this.sight({ visibleShare: isIntersecting ? 1 : 0 });
+  }
+
+  sight({
+    visibleShare,
+    height = 200,
+    screenHeight = SCREEN_HEIGHT,
+  }: Sighting) {
     act(() => {
       this.callback(
-        [{ isIntersecting } as IntersectionObserverEntry],
+        [
+          {
+            isIntersecting: visibleShare > 0,
+            intersectionRatio: visibleShare,
+            boundingClientRect: { height } as DOMRectReadOnly,
+            rootBounds:
+              screenHeight === null
+                ? null
+                : ({ height: screenHeight } as DOMRectReadOnly),
+          } as IntersectionObserverEntry,
+        ],
         this as unknown as IntersectionObserver,
       );
     });
@@ -91,6 +123,43 @@ describe("<Reveal />", () => {
         observer.report(true);
 
         expect(observer.disconnect).toHaveBeenCalled();
+      });
+
+      it("watches both when the content appears and when enough of it is visible", () => {
+        render(<Reveal>Hello</Reveal>);
+
+        expect(getObserver().options?.threshold).toEqual([0, REVEAL_THRESHOLD]);
+      });
+    });
+
+    describe("and only the edge of the content is on screen", () => {
+      it("keeps the content hidden until more of it is visible", () => {
+        render(<Reveal>Hello</Reveal>);
+
+        getObserver().sight({ visibleShare: REVEAL_THRESHOLD / 2 });
+
+        expect(screen.getByText("Hello")).toHaveClass("opacity-0");
+      });
+    });
+
+    describe("and the content is too tall to ever be visible enough, as when the page is zoomed in", () => {
+      it("shows the content as soon as it appears", () => {
+        render(<Reveal>Hello</Reveal>);
+        const height = (SCREEN_HEIGHT / REVEAL_THRESHOLD) * 2;
+
+        getObserver().sight({ visibleShare: 0.01, height });
+
+        expect(screen.getByText("Hello")).not.toHaveClass("opacity-0");
+      });
+
+      it("measures the window when the browser does not report the screen size", () => {
+        vi.stubGlobal("innerHeight", SCREEN_HEIGHT);
+        render(<Reveal>Hello</Reveal>);
+        const height = (SCREEN_HEIGHT / REVEAL_THRESHOLD) * 2;
+
+        getObserver().sight({ visibleShare: 0.01, height, screenHeight: null });
+
+        expect(screen.getByText("Hello")).not.toHaveClass("opacity-0");
       });
     });
 

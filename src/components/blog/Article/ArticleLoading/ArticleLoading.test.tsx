@@ -13,6 +13,17 @@ describe("<ArticleLoading />", () => {
       );
     });
 
+    it("uses the loading message as the main heading until the article arrives", () => {
+      render(<ArticleLoading />);
+
+      expect(screen.getAllByRole("heading")).toEqual([
+        screen.getByRole("heading", {
+          level: 1,
+          name: ARTICLE_MESSAGES.loading,
+        }),
+      ]);
+    });
+
     it("shows the placeholder only to sighted visitors", () => {
       render(<ArticleLoading />);
 
@@ -20,7 +31,6 @@ describe("<ArticleLoading />", () => {
         screen.getByRole("status").querySelectorAll("[aria-hidden='true']"),
       ).toHaveLength(1);
       expect(screen.queryByRole("article")).not.toBeInTheDocument();
-      expect(screen.queryByRole("heading")).not.toBeInTheDocument();
     });
 
     it("pulses only for visitors who accept motion", () => {
