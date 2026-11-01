@@ -9,7 +9,8 @@ const stubClipboard = (writeText: () => Promise<void>) =>
     configurable: true,
   });
 
-const announcement = () => document.querySelector("[aria-live='polite']");
+const announcement = () =>
+  document.querySelector<HTMLElement>("[aria-live='polite']");
 
 const press = async () => {
   await act(async () => {
