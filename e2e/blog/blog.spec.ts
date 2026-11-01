@@ -3,9 +3,14 @@ import {
   ARTICLES,
   ARTICLES_URL,
   answerWith,
+  COVER_IMAGE_URL,
+  COVERED_ARTICLE,
+  holdBackImages,
+  isLoaded,
   neverAnswer,
   PUBLISHED_DATES,
   serveArticles,
+  sizeOf,
 } from "./articlesApi";
 
 const TITLE = "Blog · Łukasz Kałużny";
@@ -14,6 +19,9 @@ const LONG_TITLE = "Wolfeschlegelsteinhausenbergerdorff".repeat(5);
 
 const navigation = (page: Page) =>
   page.getByRole("navigation", { name: "Main" });
+
+const rowOf = (page: Page, title: string) =>
+  page.getByRole("region", { name: title }).locator("xpath=../..");
 
 test.describe("Given a visitor on the home page", () => {
   test.describe("when they choose Blog in the navigation", () => {
@@ -184,6 +192,127 @@ test.describe("Given a visitor on a wide screen", () => {
       for (let index = 1; index < lefts.length; index += 1) {
         expect(Math.abs(lefts[index] - lefts[index - 1])).toBeGreaterThan(100);
       }
+    });
+  });
+});
+
+test.describe("Given an article with a cover image", () => {
+  test.describe("when a visitor opens the blog on a wide screen", () => {
+    test.use({ viewport: { width: 1440, height: 900 } });
+
+    test("then the image replaces the calendar page, and the other articles keep theirs", async ({
+      page,
+    }) => {
+      await serveArticles(page);
+
+      await page.goto("/blog");
+      await expect(page.getByRole("region")).toHaveCount(ARTICLES.length);
+      const covered = rowOf(page, COVERED_ARTICLE.title);
+      const image = covered.locator("img");
+
+      await expect(page.getByRole("main").locator("img")).toHaveCount(1);
+      await expect(image).toHaveAttribute("src", COVER_IMAGE_URL);
+      await expect(image).toHaveAttribute("alt", "");
+      await expect(image).toHaveAttribute("loading", "lazy");
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toBeVisible();
+      await expect.poll(() => isLoaded(image)).toBe(true);
+      await expect(covered.getByText("Apr", { exact: true })).toHaveCount(0);
+      await expect(covered.getByText("2", { exact: true })).toHaveCount(0);
+      for (const [title, month] of [
+        [ARTICLES[1].title, "Feb"],
+        [ARTICLES[2].title, "Jan"],
+      ]) {
+        const row = rowOf(page, title);
+        await row.scrollIntoViewIfNeeded();
+        await expect(row.getByText(month, { exact: true })).toBeVisible();
+        await expect(row.locator("img")).toHaveCount(0);
+      }
+    });
+
+    test("then the image is on the other side of the text, where a calendar page would be", async ({
+      page,
+    }) => {
+      await serveArticles(page);
+      await page.goto("/blog");
+      const section = page.getByRole("region", {
+        name: COVERED_ARTICLE.title,
+      });
+      const image = rowOf(page, COVERED_ARTICLE.title).locator("img");
+
+      await image.scrollIntoViewIfNeeded();
+
+      const sectionBox = await section.boundingBox();
+      const imageBox = await image.boundingBox();
+      expect(sectionBox).not.toBeNull();
+      expect(imageBox).not.toBeNull();
+      // The first article has its text on the right, so its image is on the left.
+      expect((imageBox?.x ?? 0) + (imageBox?.width ?? 0)).toBeLessThanOrEqual(
+        (sectionBox?.x ?? 0) + 40,
+      );
+    });
+  });
+
+  test.describe("when a visitor opens the blog on a phone", () => {
+    test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
+
+    test("then the image is shown too, while the calendar pages stay hidden", async ({
+      page,
+    }) => {
+      await serveArticles(page);
+
+      await page.goto("/blog");
+      const image = rowOf(page, COVERED_ARTICLE.title).locator("img");
+      await image.scrollIntoViewIfNeeded();
+
+      await expect(image).toBeVisible();
+      await expect.poll(() => isLoaded(image)).toBe(true);
+      await expect(page.getByText("Feb", { exact: true })).toBeHidden();
+      await expect(page.getByText("Jan", { exact: true })).toBeHidden();
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth <=
+            document.documentElement.clientWidth,
+        ),
+      ).toBe(true);
+    });
+  });
+
+  test.describe("when the image is still on its way", () => {
+    test("then its place is already kept, a 4 by 3 crop, so nothing moves when it arrives", async ({
+      page,
+    }) => {
+      await serveArticles(page);
+      const release = await holdBackImages(page);
+      await page.goto("/blog");
+      const image = rowOf(page, COVERED_ARTICLE.title).locator("img");
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toBeVisible();
+      expect(await isLoaded(image)).toBe(false);
+      const before = await sizeOf(image);
+
+      release();
+      await expect.poll(() => isLoaded(image)).toBe(true);
+
+      expect(await sizeOf(image)).toEqual(before);
+      expect(before.width / before.height).toBeCloseTo(4 / 3, 1);
+    });
+  });
+
+  test.describe("when the API is an older one and sends no image fields", () => {
+    test("then every article shows its calendar page, as before", async ({
+      page,
+    }) => {
+      await serveArticles(
+        page,
+        ARTICLES.map(({ imageId, imageUrl, ...article }) => article),
+      );
+
+      await page.goto("/blog");
+
+      await expect(page.getByRole("region")).toHaveCount(ARTICLES.length);
+      await expect(page.getByRole("main").locator("img")).toHaveCount(0);
     });
   });
 });

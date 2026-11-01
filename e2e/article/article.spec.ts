@@ -4,8 +4,13 @@ import {
   answerWith,
   answerWithStatus,
   articleUrl,
+  COVER_IMAGE_URL,
+  COVERED_ARTICLE,
+  holdBackImages,
+  isLoaded,
   serveArticle,
   serveArticles,
+  sizeOf,
 } from "../blog/articlesApi";
 
 const PHONE = { width: 360, height: 800 };
@@ -20,7 +25,13 @@ const OTHER_ARTICLE = {
   ...ARTICLES[2],
   content: "I want a place to write down what I learn.",
 };
-const LIST = [ARTICLES[0], ARTICLE, OTHER_ARTICLE];
+const COVERED = {
+  ...COVERED_ARTICLE,
+  content:
+    "A Gherkin scenario describes behaviour in plain words.\n\nThen it checks it against the running app.",
+};
+const LIST = [COVERED, ARTICLE, OTHER_ARTICLE];
+const COVERED_PATH = `/articles/${COVERED.id}`;
 const ARTICLE_PATH = `/articles/${ARTICLE.id}`;
 const ARTICLE_TITLE = `${ARTICLE.title} · Łukasz Kałużny`;
 const MISSING_ID = "5e1f0a2b-0001-4000-8000-0000000000ff";
@@ -499,6 +510,158 @@ test.describe("Given a visitor reads an article", () => {
       );
 
       await expect.poll(filled).toBe(1);
+    });
+  });
+});
+
+test.describe("Given an article with a cover image", () => {
+  test.describe("when a visitor opens it", () => {
+    test("then the image is at the top of the card, between the header and the text", async ({
+      page,
+    }) => {
+      await serveArticle(page, COVERED);
+
+      await page.goto(COVERED_PATH);
+      const article = page.getByRole("article");
+      const image = article.locator("img");
+
+      await expect(articleHeading(page)).toHaveText(COVERED.title);
+      await expect(article.locator("img")).toHaveCount(1);
+      await expect(image).toHaveAttribute("src", COVER_IMAGE_URL);
+      await expect(image).toHaveAttribute("alt", "");
+      await expect(image).not.toHaveAttribute("loading", "lazy");
+      await expect(image).toBeInViewport();
+      await expect.poll(() => isLoaded(image)).toBe(true);
+      const headerBox = await article.locator("header").boundingBox();
+      const imageBox = await image.boundingBox();
+      const textBox = await article.locator("p").first().boundingBox();
+      expect(headerBox && imageBox && textBox).toBeTruthy();
+      expect(imageBox?.y).toBeGreaterThanOrEqual(
+        (headerBox?.y ?? 0) + (headerBox?.height ?? 0) - 1,
+      );
+      expect(textBox?.y).toBeGreaterThanOrEqual(
+        (imageBox?.y ?? 0) + (imageBox?.height ?? 0) - 1,
+      );
+    });
+
+    test("then the image fills the width of the card, as a 16 by 9 crop", async ({
+      page,
+    }) => {
+      await serveArticle(page, COVERED);
+
+      await page.goto(COVERED_PATH);
+      const image = page.getByRole("article").locator("img");
+      await expect.poll(() => isLoaded(image)).toBe(true);
+
+      const { width, height } = await sizeOf(image);
+      const card = await sizeOf(page.getByRole("article"));
+      expect(width).toBe(card.width - 2);
+      expect(width / height).toBeCloseTo(16 / 9, 1);
+    });
+
+    test("then the rest of the article is as it was", async ({ page }) => {
+      await serveArticle(page, COVERED);
+
+      await page.goto(COVERED_PATH);
+
+      await expect(page).toHaveTitle(`${COVERED.title} · Łukasz Kałużny`);
+      await expect(page.getByRole("main").locator("time")).toHaveText(
+        "2 April 2025",
+      );
+      await expect(page.getByText("1 min read")).toBeVisible();
+      await expect(page.getByRole("article").locator("p")).toHaveText([
+        "A Gherkin scenario describes behaviour in plain words.",
+        "Then it checks it against the running app.",
+      ]);
+    });
+  });
+
+  test.describe("when the image is still on its way", () => {
+    test("then the text is already where it will stay, so nothing jumps when the image arrives", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await serveArticle(page, COVERED);
+      const release = await holdBackImages(page);
+      await page.goto(COVERED_PATH);
+      const image = page.getByRole("article").locator("img");
+      const text = page.getByRole("article").locator("p").first();
+      await expect(text).toBeVisible();
+      expect(await isLoaded(image)).toBe(false);
+      const before = await text.boundingBox();
+
+      release();
+      await expect.poll(() => isLoaded(image)).toBe(true);
+
+      expect(await text.boundingBox()).toEqual(before);
+    });
+  });
+
+  test.describe("when a visitor opens it from the blog", () => {
+    test("then the article shows the same image", async ({ page }) => {
+      await serveArticles(page, LIST);
+      await serveArticle(page, COVERED);
+      await page.goto("/blog");
+
+      await readMore(page, COVERED.title).click();
+
+      await expect(page).toHaveURL(COVERED_PATH);
+      await expect(articleHeading(page)).toHaveText(COVERED.title);
+      await expect(page.getByRole("article").locator("img")).toHaveAttribute(
+        "src",
+        COVER_IMAGE_URL,
+      );
+    });
+  });
+
+  test.describe("when a visitor reads it on a phone", () => {
+    test.use({ viewport: PHONE, isMobile: true, hasTouch: true });
+
+    test("then the image fits the screen and the page never scrolls sideways", async ({
+      page,
+    }) => {
+      await serveArticle(page, COVERED);
+
+      await page.goto(COVERED_PATH);
+      const image = page.getByRole("article").locator("img");
+      await expect.poll(() => isLoaded(image)).toBe(true);
+
+      await expect(image).toBeVisible();
+      expect((await image.boundingBox())?.width).toBeLessThanOrEqual(
+        PHONE.width,
+      );
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth <=
+            document.documentElement.clientWidth,
+        ),
+      ).toBe(true);
+    });
+  });
+});
+
+test.describe("Given an article without a cover image", () => {
+  test.describe("when a visitor opens it", () => {
+    test("then no image is shown", async ({ page }) => {
+      await serveArticle(page, OTHER_ARTICLE);
+
+      await page.goto(`/articles/${OTHER_ARTICLE.id}`);
+
+      await expect(articleHeading(page)).toHaveText(OTHER_ARTICLE.title);
+      await expect(page.getByRole("article").locator("img")).toHaveCount(0);
+    });
+  });
+
+  test.describe("when the API is an older one and sends no image fields", () => {
+    test("then no image is shown either", async ({ page }) => {
+      const { imageId, imageUrl, ...older } = COVERED;
+      await serveArticle(page, older);
+
+      await page.goto(COVERED_PATH);
+
+      await expect(articleHeading(page)).toHaveText(COVERED.title);
+      await expect(page.getByRole("article").locator("img")).toHaveCount(0);
     });
   });
 });

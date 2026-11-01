@@ -93,6 +93,34 @@ describe("<Article />", () => {
       expect(screen.queryByRole("status")).not.toBeInTheDocument();
     });
 
+    it("shows the cover image of the article, when it has one", async () => {
+      const imageUrl =
+        "http://localhost/api/v1/images/616ad187-7d8e-4e85-912d-36c743357d1a";
+      vi.mocked(getArticle).mockResolvedValueOnce({
+        ...FIRST,
+        imageId: "616ad187-7d8e-4e85-912d-36c743357d1a",
+        imageUrl,
+      });
+
+      render(<Article id={FIRST.id} />);
+      const article = await screen.findByRole("article");
+
+      expect(article.querySelector("img")).toHaveAttribute("src", imageUrl);
+    });
+
+    it("shows no image when the article has none", async () => {
+      vi.mocked(getArticle).mockResolvedValueOnce({
+        ...FIRST,
+        imageId: null,
+        imageUrl: null,
+      });
+
+      render(<Article id={FIRST.id} />);
+      const article = await screen.findByRole("article");
+
+      expect(article.querySelector("img")).toBeNull();
+    });
+
     it("offers more articles after the last paragraph", async () => {
       vi.mocked(getArticle).mockResolvedValueOnce(FIRST);
 

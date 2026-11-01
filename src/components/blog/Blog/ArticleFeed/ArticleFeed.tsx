@@ -62,17 +62,20 @@ const ArticleFeed = ({ state, onRetry }: Props) => {
     );
   }
 
-  return state.articles.map(({ id, title, content, publishedAt }, index) => (
-    <ArticleSection
-      key={id}
-      id={id}
-      title={title}
-      content={content}
-      publishedAt={publishedAt}
-      side={index % 2 === 0 ? "right" : "left"}
-      accent={ACCENT_ORDER[index % ACCENT_ORDER.length]}
-    />
-  ));
+  return state.articles.map(
+    ({ id, title, content, publishedAt, imageUrl }, index) => (
+      <ArticleSection
+        key={id}
+        id={id}
+        title={title}
+        content={content}
+        publishedAt={publishedAt}
+        imageUrl={imageUrl}
+        side={index % 2 === 0 ? "right" : "left"}
+        accent={ACCENT_ORDER[index % ACCENT_ORDER.length]}
+      />
+    ),
+  );
 };
 
 export default ArticleFeed;
