@@ -1,5 +1,7 @@
 import type { Contact } from "../components/shared/SiteFooter/ContactList/ContactList.types";
 
+export const CONTACT_EMAIL = "lukaszkaluzny09@gmail.com";
+
 export const CONTACTS: Contact[] = [
   {
     kind: "github",

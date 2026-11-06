@@ -1,7 +1,9 @@
 import type { ContactKind } from "../../shared/SiteFooter/ContactList/ContactList.types";
 
 export const CONTACT_DESCRIPTION =
-  "Have a question, an idea or just want to say hi? Pick the channel you like best.";
+  "Have an app idea, a question or just want to talk about mobile development? Send me a message, I'd love to hear from you.";
+
+export const CONTACT_CHANNELS_TITLE = "Find me elsewhere";
 
 export const CONTACT_CARD_REVEAL_STEP = 80;
 

@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { COPY_FEEDBACK_MS } from "../../../../utils/useCopyToClipboard";
 import CopyLinkButton from "./CopyLinkButton";
-import { COPY_FEEDBACK_MS, COPY_STATUS } from "./CopyLinkButton.constants";
+import { COPY_STATUS } from "./CopyLinkButton.constants";
 
 const stubClipboard = (writeText: () => Promise<void>) =>
   Object.defineProperty(navigator, "clipboard", {
