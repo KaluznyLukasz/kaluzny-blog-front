@@ -44,8 +44,21 @@ export const SKILL_GROUPS: SkillGroup[] = [
     skills: ["TypeScript", "React", "React Router", "Tailwind CSS", "SQL"],
   },
   {
+    title: "Backend",
+    skills: ["Node.js", "NestJS", "PostgreSQL", "Prisma", "Swagger"],
+  },
+  {
     title: "Testing & tooling",
-    skills: ["Vitest", "Playwright", "Storybook", "Git"],
+    skills: [
+      "Vitest",
+      "Jest",
+      "Cucumber.js",
+      "Playwright",
+      "Storybook",
+      "Docker",
+      "Git",
+      "GitHub",
+    ],
   },
 ];
 
