@@ -206,6 +206,18 @@ for (const viewport of [DESKTOP, PHONE]) {
   });
 }
 
+// Form fields draw their outline around themselves, so e2e/contact checks them
+const pressTabPastFormFields = async (page: Page) => {
+  await page.keyboard.press("Tab");
+  while (
+    await page.evaluate(() =>
+      document.activeElement?.matches("input, textarea"),
+    )
+  ) {
+    await page.keyboard.press("Tab");
+  }
+};
+
 test.describe("Given a keyboard user", () => {
   for (const { name, open } of SCREENS) {
     test.describe(`when they press Tab through ${name}`, () => {
@@ -217,7 +229,7 @@ test.describe("Given a keyboard user", () => {
         const count = await focusables.count();
 
         for (let index = 0; index < count; index += 1) {
-          await page.keyboard.press("Tab");
+          await pressTabPastFormFields(page);
           const element = focusables.nth(index);
 
           await expect(element).toBeFocused();

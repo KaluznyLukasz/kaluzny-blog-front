@@ -9,7 +9,7 @@ export const PRIVACY_POLICY_TITLE = "Privacy policy";
 export const PRIVACY_POLICY_DESCRIPTION =
   "What happens to your data when you visit this website: as little as possible.";
 
-export const PRIVACY_POLICY_UPDATED_AT = "2026-10-31";
+export const PRIVACY_POLICY_UPDATED_AT = "2026-11-06";
 
 export const SUPERVISORY_AUTHORITY_URL = "https://uodo.gov.pl/en";
 
@@ -28,7 +28,8 @@ export const PRIVACY_POLICY_SECTIONS: LegalSection[] = [
     title: "In short",
     paragraphs: ["This website is built to collect as little as possible:"],
     items: [
-      "There are no accounts, forms, comments or newsletters.",
+      "There are no accounts, comments or newsletters.",
+      "The contact form sends nothing to this website: it only prepares an email in your own email app, and you decide whether to send it.",
       "It sets no cookies and keeps nothing in your browser's storage, so there is nothing to consent to.",
       "There is no analytics, advertising or tracking of any kind.",
       "Images, styles and scripts are served together with the website itself, and it uses the fonts already on your device, so your browser does not contact Google or any other third party while you read it.",
@@ -46,15 +47,15 @@ export const PRIVACY_POLICY_SECTIONS: LegalSection[] = [
   {
     title: "Who else receives your data",
     paragraphs: [
-      "The servers are run by a hosting provider, which processes the data only on my behalf and on my instructions, under a data processing agreement (Article 28 GDPR). Apart from that, I share your data with no one, unless the law requires me to.",
+      "The servers are run by a hosting provider, which processes the data only on my behalf and on my instructions, under a data processing agreement (Article 28 GDPR). Messages you write to me also reach the companies named in the next section. Apart from that, I share your data with no one, unless the law requires me to.",
       "If a provider processes the data outside the European Economic Area, it does so only with the safeguards required by the GDPR, such as the standard contractual clauses approved by the European Commission.",
     ],
   },
   {
     title: "When you write to me",
     paragraphs: [
-      "If you write to me through one of the channels on the contact page, I receive what you send me, such as your name, your contact details and your message. I use it only to reply to you and keep it for as long as our conversation needs it. The legal basis is my legitimate interest in answering your message (Article 6(1)(f) GDPR).",
-      "GitHub, LinkedIn, Facebook and Instagram are run by other companies, which process your data as separate controllers under their own privacy policies.",
+      "If you write to me by email or through one of the channels on the contact page, I receive what you send me, such as your name, your contact details and your message. I use it only to reply to you and keep it for as long as our conversation needs it. The legal basis is my legitimate interest in answering your message (Article 6(1)(f) GDPR).",
+      "Gmail, which I use for email, GitHub, LinkedIn, Facebook and Instagram are run by other companies, which process your data as separate controllers under their own privacy policies and may do so outside the European Economic Area.",
     ],
   },
   {

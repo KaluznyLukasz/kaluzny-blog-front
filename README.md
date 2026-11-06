@@ -122,7 +122,7 @@ Before the first `yarn e2e` run, install the browser with `yarn playwright insta
 | `/portfolio`     | Projects with status, platforms and store links                                               |
 | `/blog`          | Articles from the API                                                                         |
 | `/articles/:id`  | One article, with reading progress and a button that copies its link                          |
-| `/contact`       | Ways to reach me (add `{ kind: "email", ... }` to `src/constants/contacts.ts` to show email)  |
+| `/contact`       | Form that prepares an email (`mailto:`, no backend), my address and the other channels        |
 | `/privacy`       | Privacy policy (GDPR information), linked from the footer                                     |
 | `/legal`         | Legal notice: who runs the site, copyright, trademarks and open-source licences               |
 | anything else    | "Page not found" (`src/pages/$.tsx`); unexpected errors show the error page from `root.tsx` |

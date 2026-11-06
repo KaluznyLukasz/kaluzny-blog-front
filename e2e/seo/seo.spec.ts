@@ -13,7 +13,7 @@ const PAGES = [
   {
     path: "/contact",
     title: `Contact · ${SITE_NAME}`,
-    description: /channel/i,
+    description: /message/i,
   },
   {
     path: "/privacy",
