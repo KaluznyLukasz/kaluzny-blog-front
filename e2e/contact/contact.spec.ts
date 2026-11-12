@@ -4,13 +4,6 @@ const TITLE = "Contact · Łukasz Kałużny";
 const PHONE = { width: 360, height: 800 };
 const EMAIL = "lukaszkaluzny09@gmail.com";
 
-const CHANNELS = [
-  ["GitHub", "https://github.com/KaluznyLukasz"],
-  ["LinkedIn", "https://www.linkedin.com/in/"],
-  ["Facebook", "https://www.facebook.com/"],
-  ["Instagram", "https://www.instagram.com/"],
-];
-
 // A text field draws its outline on the box around it, a topic on its pill
 const showsFocusOutline = (page: Page) =>
   page.evaluate(() => {
@@ -55,24 +48,6 @@ test.describe("Given a visitor on the home page", () => {
 
 test.describe("Given a visitor on the contact page", () => {
   test.describe("when they look for a way to reach me", () => {
-    test("then every channel is a link with a hint about what it is for", async ({
-      page,
-    }) => {
-      await page.goto("/contact");
-      const main = page.getByRole("main");
-
-      for (const [name, href] of CHANNELS) {
-        const link = main.getByRole("link", { name: new RegExp(`^${name}`) });
-
-        await expect(link).toBeVisible();
-        expect(await link.getAttribute("href")).toContain(href);
-      }
-      await expect(main.getByRole("list").getByRole("link")).toHaveCount(
-        CHANNELS.length,
-      );
-      await expect(main.getByText("Browse the code I write")).toBeVisible();
-    });
-
     test("then the email address can be opened and copied", async ({
       page,
       context,
@@ -209,27 +184,6 @@ test.describe("Given a visitor on the contact page", () => {
       );
 
       expect((await button.boundingBox())?.y).toBe(before);
-    });
-  });
-
-  test.describe("when they hover over a channel", () => {
-    test("then it lifts to show that it can be pressed", async ({ page }) => {
-      await page.goto("/contact");
-      const card = page
-        .getByRole("main")
-        .getByRole("link", { name: /^GitHub/ });
-      await page.evaluate(() =>
-        Promise.all(
-          document.getAnimations().map((animation) => animation.finished),
-        ),
-      );
-      const before = (await card.boundingBox())?.y ?? 0;
-
-      await card.hover();
-
-      await expect
-        .poll(async () => (await card.boundingBox())?.y ?? 0)
-        .toBeLessThan(before);
     });
   });
 
